@@ -6,8 +6,8 @@ class FindSamplesPerTissue:
     def __init__(self, tissue_name, tissue_config_json):
         self.tissue_name = tissue_name
         self.tissue_config_json = tissue_config_json
-        self.SampleAttributesDS_df = pd.read_csv("data/manifest/GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt", sep="\t")
-        self.SubjectPhenotypesDS = pd.read_csv("data/manifest/GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt", sep="\t")
+        self.SampleAttributesDS_df = pd.read_csv("manifest/GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt", sep="\t")
+        self.SubjectPhenotypesDS = pd.read_csv("manifest/GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt", sep="\t")
 
     def generate_config(self): #TODO: add with TPM samples
         tissue_data = {}
@@ -27,7 +27,7 @@ class FindSamplesPerTissue:
         tissue_data["males"] = [i for i in tissue_data["all_samples"] if i.split("-")[1] in males_id]
 
         # Check if the samples have RNAseq, then stratify by sex
-        with gzip.open("data/counts/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz", "rt") as f:
+        with gzip.open("counts/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz", "rt") as f:
             for line in f:
                 if line.startswith("Name"):
                     has_rnaseq_samples = {i for i in line.rstrip("\n").split("\t")}
@@ -42,7 +42,7 @@ class FindSamplesPerTissue:
 
 
 def main():
-    with open("data/manifest/GTEx_Portal.csv", "r") as f:
+    with open("manifest/GTEx_Portal.csv", "r") as f:
         tissues = [line.rstrip("\n").split(",")[0].strip('"') for line in f if not line.startswith('"Tissue"')] #tissues names in GTEx such as Whole Blood
 
         # generating a config file for all of the gtex tissues.
