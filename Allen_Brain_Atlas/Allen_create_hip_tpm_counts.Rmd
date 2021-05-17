@@ -167,7 +167,7 @@ sex.info <- as.data.frame(cbind(donorid.hip,donorsex.hip))
 colnames(sex.info) <- c("donor_id","sex")
 
 write.table(counts,"hippocampus_tpm_counts.txt", sep = "\t")
-write.table(sex.info, "hippocampus_donorid_sex.txt", sep = "\t")
+write.table(sex.info, "metadata.txt", sep = "\t")
 ```
 
 
