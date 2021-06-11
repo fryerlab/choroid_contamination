@@ -1,0 +1,178 @@
+---
+title: "Get Hippocampus Data: TPM Counts"
+author: "Kennedi Todd"
+date: "2/8/2021"
+output: html_document
+---
+
+```{r}
+setwd("/Users/m214960/Documents/R_Workspace/Allen_Brain_Atlas/raw_data")
+```
+
+```{r}
+library(data.table)
+library(edgeR)
+library(rtracklayer)
+```
+
+Get info for downloading files.
+```{r}
+data.files <- read.csv(file = "tbi_data_files.csv",header = TRUE, sep = ",")
+donor.info <- read.csv(file = "DonorInformation.csv", header = TRUE, sep = ",")
+
+# Extract sample info
+tissue_acronyms <- unique(data.files$structure_acronym)
+tissue_acronyms
+
+# Subset hippocampus data
+data.files.hip <- subset(data.files, structure_acronym == "HIP")
+
+# we can get donor sex by joining tables based on donor_id
+df.hip <- merge(data.files.hip, donor.info, by = "donor_id")
+
+# Exract info
+links.hip <- df.hip$gene_level_fpkm_file_link
+donorid.hip <- df.hip$donor_id
+rnaid.hip <- df.hip$rnaseq_profile_id
+donorsex.hip <- df.hip$sex
+```
+
+Get gene annotation file.
+```{r}
+gtf.file <- "rsem_GRCh38.p2.gtf"
+gtf.gr <- rtracklayer::import(gtf.file)
+gtf.df <- as.data.frame(gtf.gr)
+```
+
+Subset gtf.df to get gene list.  There are 50,283 observations.
+```{r}
+genes <- subset(gtf.df, type == "gene")
+```
+
+Download one file from links.hip to see the columns that are available to subset.
+There are 50,283 observations.
+```{r}
+url_path <- paste0("http://aging.brain-map.org", links.hip[1])
+file <- fread(url_path, header = TRUE)
+# We will want the gene_id column of at least one file.
+# Merge the gene_id column with the gtf.df later
+```
+
+Create gene info table.
+```{r}
+# The two columns we join by are different class types
+# Make both gene_id columns the character type
+file$gene_id <- as.character(file$gene_id)
+gene.info <- as.data.frame(merge(file, genes, by = "gene_id"))
+```
+
+Reformat the table to exclude file specific values.
+Keep gene info.
+```{r}
+keep.columns <- c(1,3:5,8:17)
+gene.info <- gene.info[,keep.columns]
+```
+
+
+Check to see if our gene_id columns match.
+```{r}
+all.equal(gene.info$gene_id, file$gene_id)
+```
+
+
+Output files.
+```{r}
+write.table(gene.info, "gene_info_for_counts_file.txt", sep = "\t")
+```
+
+
+Preview one file to see what we can subset.
+```{r}
+url_path <- paste0("http://aging.brain-map.org", links.hip[1])
+file <- fread(url_path, header = TRUE)
+```
+
+
+```{r}
+counts1 <- data.frame(row.names = 1:50283)
+
+for (i in 1:20) {
+  url_path <- paste0("http://aging.brain-map.org", links.hip[i])
+  file <- fread(url_path, header = TRUE, select = "TPM")
+  file <- as.vector(file)
+  counts1 <- cbind(counts1, file)
+  print(i)
+  Sys.sleep(5)
+}
+```
+
+```{r}
+counts2 <- data.frame(row.names = 1:50283)
+
+for (i in 21:40) {
+  url_path <- paste0("http://aging.brain-map.org", links.hip[i])
+  file <- fread(url_path, header = TRUE, select = "TPM")
+  file <- as.vector(file)
+  counts2 <- cbind(counts2, file)
+  print(i)
+  Sys.sleep(5)
+}
+```
+
+```{r}
+counts3 <- data.frame(row.names = 1:50283)
+
+for (i in 41:60) {
+  url_path <- paste0("http://aging.brain-map.org", links.hip[i])
+  file <- fread(url_path, header = TRUE, select = "TPM")
+  file <- as.vector(file)
+  counts3 <- cbind(counts3, file)
+  Sys.sleep(5)
+}
+```
+
+```{r}
+counts4 <- data.frame(row.names = 1:50283)
+
+for (i in 61:80) {
+  url_path <- paste0("http://aging.brain-map.org", links.hip[i])
+  file <- fread(url_path, header = TRUE, select = "TPM")
+  file <- as.vector(file)
+  counts4 <- cbind(counts4, file)
+  print(i)
+  Sys.sleep(5)
+}
+```
+
+```{r}
+counts5 <- data.frame(row.names = 1:50283)
+
+for (i in 81:94) {
+  url_path <- paste0("http://aging.brain-map.org", links.hip[i])
+  file <- fread(url_path, header = TRUE, select = "TPM")
+  file <- as.vector(file)
+  counts5 <- cbind(counts5, file)
+  print(i)
+  Sys.sleep(5)
+}
+```
+
+Create final counts file.
+```{r}
+counts <- cbind(counts1, counts2, counts3, counts4, counts5)
+colnames(counts) <- c(donorid.hip)
+rownames(counts) <- gene.info$gene_id
+
+sex.info <- as.data.frame(cbind(donorid.hip,donorsex.hip))
+colnames(sex.info) <- c("donor_id","sex")
+
+write.table(counts,"hippocampus_tpm_counts.txt", sep = "\t")
+write.table(sex.info, "metadata.txt", sep = "\t")
+```
+
+
+
+
+
+
+
