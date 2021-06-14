@@ -18,5 +18,5 @@
   - gene_info_for_counts_file.txt
   - metadata.txt
 - 2 files will be output.
-  - DEG_dirty_vs_clean_FDRq1_log2FC0.txt which contains a differentially expressed genes list with the specified cutoffs.
-  - DEG_dirty_vs_clean_FDRq0.05_Log2FC1.txt whcih contains a differentially expressed genes list with the specified cutoffs. 
+  - **DEG_dirty_vs_clean_FDRq1_log2FC0.txt** which contains a differentially expressed genes list with the specified cutoffs.
+  - **DEG_dirty_vs_clean_FDRq0.05_Log2FC1.txt** whcih contains a differentially expressed genes list with the specified cutoffs. 
