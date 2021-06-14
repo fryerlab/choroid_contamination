@@ -4,7 +4,7 @@
 - The counts matrix will contains all hippocampus samples from the Allen Brain Atlas Aging, Dementia and TBI dataset.
   - © 2017 Allen Institute for Brain Science. Aging, Dementia and TBI. Available from: https://aging.brain-map.org/
 - The script **Allen_create_hippocampus_counts.Rmd** will create a counts table. 
-  - 3 files are used as for input.  They came directly from the Aging, Dementia and TBI database.
+  - 3 files are used as for input.  They came directly from the Aging, Dementia and TBI download page.
     - **rsem_GRCh38.p2.gtf**
     - **tbi_data_files.csv**
     - **DonorInformation.csv**
