@@ -12,7 +12,7 @@
     - **geneInfo.txt** which contains gene annotation information 
     - **hippocampus_tpm_counts.txt** which contains counts in TPM
     - **hippocampus_metadata.txt** which contains donor metadata for downstream analyses
-## 2. Find differentially expressed genes between highly choroid contaminated hippocampus samples and clean hippocampus samples.
+## 2. Find differentially expressed genes between clean and contaminated hippocampus samples.
 - Run the script **Allen_DEGs_hip_all_samples.Rmd**.  It will read in 3 files.
   - hippocampus_tpm_counts.txt
   - gene_info_for_counts_file.txt
