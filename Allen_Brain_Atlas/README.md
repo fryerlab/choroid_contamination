@@ -15,9 +15,9 @@ This will provide the steps for the Allen Brain Atlas differentially expressed g
     - **hippocampus_metadata.txt** which contains donor metadata for downstream analyses
 ## 2. Find differentially expressed genes between clean and contaminated hippocampus samples.
 - Run the script **Allen_DEGs_hip_all_samples.Rmd**.  It will read in 3 files.
-  - hippocampus_tpm_counts.txt
-  - gene_info_for_counts_file.txt
-  - metadata.txt
+  - **hippocampus_tpm_counts.txt**
+  - **gene_info_for_counts_file.txt**
+  - **metadata.txt**
 - 2 files will be output.
   - **DEG_dirty_vs_clean_FDRq1_log2FC0.txt** which contains a differentially expressed genes list with the specified cutoffs.
   - **DEG_dirty_vs_clean_FDRq0.05_Log2FC1.txt** whcih contains a differentially expressed genes list with the specified cutoffs. 
