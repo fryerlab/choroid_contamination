@@ -3,10 +3,10 @@ This will provide the steps for the Allen Brain Atlas differentially expressed g
 ## 1. Create a counts matrix 
 - The counts matrix will contains all hippocampus samples from the Allen Brain Atlas Aging, Dementia and TBI dataset.
   - © 2017 Allen Institute for Brain Science. Aging, Dementia and TBI. Available from: https://aging.brain-map.org/
-- The script **Allen_create_hippocampus_counts.Rmd** will create a counts table. 
+- The script **Allen_create_hippocampus_counts.Rmd** will create a counts matrix. 
   - 3 files are used as for input.  They came directly from the Aging, Dementia and TBI download page.
     - **rsem_GRCh38.p2.gtf**
-      - The gtf file provided from Allen does not contain chromosome location.  Alternatively, you can download the same version from GENCODE that has the chromosome column.  This file is called **. **.
+      - The gtf file provided from Allen does not contain chromosome location.  Alternatively, you can download the same version from GENCODE that has the chromosome column.  This file is called **gencode.v22.annotation.gtf.gz** and did not come direclty from the Allen website.
     - **tbi_data_files.csv**
     - **DonorInformation.csv**
   - The script will output 2 files.
