@@ -1,3 +1,4 @@
+# GTEx
 ## Run the script **GTEx_DEG_all_samples.Rmd** to find differentially expressed genes between clean and contaminated hippocampus samples.  
 - 3 input files are required.
   - **Brain_hippocampus** which is the hippocampus counts matrix
