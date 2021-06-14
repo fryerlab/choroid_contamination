@@ -6,6 +6,7 @@
 - The script **Allen_create_hippocampus_counts.Rmd** will create a counts table. 
   - 3 files are used as for input.  They came directly from the Aging, Dementia and TBI download page.
     - **rsem_GRCh38.p2.gtf**
+      - The gtf file provided from Allen does not contain chromosome location.  Alternatively, you can download the same version from GENCODE that has the chromosome column.  This file is called **. **.
     - **tbi_data_files.csv**
     - **DonorInformation.csv**
   - The script will output 2 files.
