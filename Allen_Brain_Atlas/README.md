@@ -1,4 +1,4 @@
-NOTE: Fix file naming.
+# NOTE: I will fix file naming.
 
 ## 1. Create a counts matrix containing all hippocampus samples from the Allen Brain Atlas Aging, Dementia and TBI dataset.
 - The script **Allen_create_hip_tpm_counts.Rmd** will create a counts table. 3 files are used as for input.
