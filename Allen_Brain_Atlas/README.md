@@ -6,7 +6,12 @@ This will provide the steps for the Allen Brain Atlas differentially expressed g
 - The script **Allen_create_hippocampus_counts.Rmd** will create a counts matrix. 
   - 3 files are used as for input.  They came directly from the Aging, Dementia and TBI download page.
     - **rsem_GRCh38.p2.gtf**
-      - The gtf file provided from Allen does not contain chromosome location.  Alternatively, you can download the same version from GENCODE that has the chromosome column.  This file is called **gencode.v22.annotation.gtf.gz** and did not come direclty from the Allen website.
+      - The gtf file provided from Allen does not contain chromosome location.  
+      - Alternatively, you can download the same version from GENCODE that has the chromosome column, Release 22 (GRCh38.p2).  
+      - Use the command below to download **gencode.v22.annotation.gtf.gz**.
+      ```
+      wget http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_22/gencode.v22.annotation.gtf.gz
+      ```
     - **tbi_data_files.csv**
     - **DonorInformation.csv**
   - The script will output 2 files.
