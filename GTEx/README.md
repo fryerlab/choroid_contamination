@@ -1,1 +1,5 @@
-The R script to find differentially expressed genes in the GTEx dataset is called **GTEx_DEG_all_samples.Rmd**.  Input files required for this script are located in this repository.
+## Run the script **GTEx_DEG_all_samples.Rmd** to find differentially expressed genes between clean and contaminated hippocampus samples.  
+- Two input files are required.
+  - **Brain_hippocampus** which is the hippocampus counts matrix
+  - **GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt** which is the metadata
+  - **gencode.v26.GRCh38.genes.gtf** which is the annotation file
