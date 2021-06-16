@@ -48,5 +48,12 @@ python scripts/parse_gtex.py --data rna --config GTEx_configs/Liver_config.json 
 3. For each tissue_counts.tsv, percentile rank (aka bin) the expression for each gene for each sample. Every gene will have a rank expression from 0-100. Zero being no expression, and 100 being the highest expressed genes for that sample. Plot a violin jitter showing rank values of TTR expression for each brain tissue. 
 
 
-
+## Group Members
+Name | email | github ID
+--- | --- |  ---
+Kimberly Olney | olney.kimberly@mayo.edu | @olneykimberly
+Kennedi Todd | todd.kennedi@mayo.edu | 
+Praveen Pallegar | Pallegar.Praveen@mayo.edu | 
+Melissa A. Wilson | | 
+John D. Fryer| fryer.john@mayo.edu | 
 
