@@ -7,9 +7,9 @@ We used the *TTR, Ttr* gene as a marker to query the gene expression omnibus (GE
 We suggest that some studies may warrant a reevaluation with removal of choroid contaminated samples, or where choroid expression is accounted for in the statistical modeling. Additionally, we suggest that a simple RT-qPCR or Western blot for choroid markers would mitigate unintended choroid contamination for any experiment, but particularly for samples intended for more costly omic profiling. 
 
 ## Here we provide our scripts for the following: 
-1) GEO web scraping to identify datasets that may have choroid contamination
-2) Allen Brain gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination
-3) GTEx gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination
+1) GEO web scraping to identify datasets that may have choroid contamination.
+2) Allen Brain gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
+3) GTEx gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
 
 ## STEP 1: GEO - quantify the scope of potential choroid plexus contamination among human and mouse brain datasets.
 1. GEO rank category definitions for *TTR* or *Ttr* contamination or lack of contamination among samples within a dataset. One way ANOVA to determine if there are statistially significant differences betwee/among the means for *TTR/Ttr* expression. Datasets will be placed in one of the following scores: 
@@ -31,7 +31,7 @@ python <command>
 
 The following command will create a pie chart of results of the GEO web scraping. Additionally, the command will compute a false discovery rate of the p-values from the one way ANOVA tests computed in step 1 above. 
 ```
-R <command>
+Rscript pieChart.R
 ```
 
 ## STEP 2: Allen Brain Atlas - Gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
