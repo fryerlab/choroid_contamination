@@ -9,10 +9,12 @@ We suggest that some studies may warrant a reevaluation with removal of choroid 
 ## Here we provide our scripts for the following: 
 1) GEO web scraping to identify datasets that may have choroid contamination
 2) Allen Brain gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination
-3)GTEx gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination
+3) GTEx gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination
 
 ## GEO - quantify the scope of potential choroid plexus contamination among human and mouse brain datasets
 1. GEO rank category definitions for *TTR* or *Ttr* contamination or lack of contamination among samples within a dataset. One way ANOVA to determine if there are statistially significant differences betwee/among the means for *TTR/Ttr* expression. Datasets will be placed in one of the following scores: 
+
+
 | Rank priority | Description |
 | --- | --- |
 | 1 | TTR/Ttr expression almost exclusively between groups, one-way ANOVA test p-value 
@@ -24,6 +26,7 @@ We suggest that some studies may warrant a reevaluation with removal of choroid 
  90%, 80% or more samples |
 | 5 | TTR/Ttr  expressed lowly, rank or value 
  10%, in 80% or more samples |
+
 
 - Script:
 - inputs:
