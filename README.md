@@ -24,15 +24,15 @@ We suggest that some studies may warrant a reevaluation with removal of choroid 
 | 5 | TTR/Ttr  expressed lowly |
 
 
-- Script:
-- inputs:
-- outputs:
-- command: 
+The following command will take a list of GEO web profile URLs and compute a one way ANOVA and assign the dataset to a rank priority value. 
 ```
 python <command>
 ```
 
-Plot 
+The following command will create a pie chart of results of the GEO web scraping. Additionally, the command will compute a false discovery rate of the p-values from the one way ANOVA tests computed in step 1 above. 
+```
+R <command>
+```
 
 ### Parsing GTEx data to find samples with and without TTR expression
 - Script: `parse_gtex.py`
