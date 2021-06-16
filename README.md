@@ -17,15 +17,11 @@ We suggest that some studies may warrant a reevaluation with removal of choroid 
 
 | Rank priority | Description |
 | --- | --- |
-| 1 | TTR/Ttr expression almost exclusively between groups, one-way ANOVA test p-value 
-< 0.05 |
-| 2 | TTR/Ttr  expression moderately between groups, one-way ANOVA test p-value 
-< 0.1 and  0.05 |
+| 1 | TTR/Ttr expression almost exclusively between groups|
+| 2 | TTR/Ttr  expression moderately between groups |
 | 3 | TTR/Ttr  expressed in no clear pattern (catch all)  |
-| 4 | TTR/Ttr  expressed highly, rank or value 
- 90%, 80% or more samples |
-| 5 | TTR/Ttr  expressed lowly, rank or value 
- 10%, in 80% or more samples |
+| 4 | TTR/Ttr  expressed highly |
+| 5 | TTR/Ttr  expressed lowly |
 
 
 - Script:
