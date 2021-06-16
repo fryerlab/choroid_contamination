@@ -6,10 +6,34 @@ The choroid plexus, a tissue responsible for the production of cerebrospinal flu
 We used the *TTR, Ttr* gene as a marker to query the gene expression omnibus (GEO) database for transcriptome studies of brain tissue and identified at least some level of likely choroid contamination in many studies which  may have confounded data analysis. We also analyzed the human genotype-tissue expression (GTEx) database and found choroid contamination, with regions in closer proximity to choroid more likely to be impacted such as hippocampus, cervical spinal cord, substantia nigra, hypothalamus, and amygdala. 
 We suggest that some studies may warrant a reevaluation with removal of choroid contaminated samples, or where choroid expression is accounted for in the statistical modeling. Additionally, we suggest that a simple RT-qPCR or Western blot for choroid markers would mitigate unintended choroid contamination for any experiment, but particularly for samples intended for more costly omic profiling. 
 
-Here we provide our scripts for the following: 
+## Here we provide our scripts for the following: 
 1) GEO web scraping to identify datasets that may have choroid contamination
 2) Allen Brain gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination
 3)GTEx gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination
+
+## GEO - quantify the scope of potential choroid plexus contamination among human and mouse brain datasets
+1. GEO rank category definitions for *TTR* or *Ttr* contamination or lack of contamination among samples within a dataset. One way ANOVA to determine if there are statistially significant differences betwee/among the means for *TTR/Ttr* expression. Datasets will be placed in one of the following scores: 
+| Rank priority | Description |
+| --- | --- |
+| 1 | TTR/Ttr expression almost exclusively between groups, one-way ANOVA test p-value 
+< 0.05 |
+| 2 | TTR/Ttr  expression moderately between groups, one-way ANOVA test p-value 
+< 0.1 and  0.05 |
+| 3 | TTR/Ttr  expressed in no clear pattern (catch all)  |
+| 4 | TTR/Ttr  expressed highly, rank or value 
+ 90%, 80% or more samples |
+| 5 | TTR/Ttr  expressed lowly, rank or value 
+ 10%, in 80% or more samples |
+
+- Script:
+- inputs:
+- outputs:
+- command: 
+```
+python <command>
+```
+
+Plot 
 
 ### Parsing GTEx data to find samples with and without TTR expression
 - Script: `parse_gtex.py`
