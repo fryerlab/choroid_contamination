@@ -1,7 +1,9 @@
 # Widespread choroid plexus contamination in sampling and profiling of brain tissue
-**TTR, Ttr** expression in human and mouse data sets
+*TTR, Ttr* expression in human and mouse data sets
+
+## Abstract
 The choroid plexus, a tissue responsible for the production of cerebrospinal fluid, is found predominantly in the lateral and fourth ventricles of the brain. It is a highly vascularized and ciliated tissue made up of epithelial cells and capillary networks surrounded by connective tissue that could potentially result in contamination during routine tissue dissection. 
-We used the **TTR, Ttr** gene as a marker to query the gene expression omnibus (GEO) database for transcriptome studies of brain tissue and identified at least some level of likely choroid contamination in many studies which  may have confounded data analysis. We also analyzed the human genotype-tissue expression (GTEx) database and found choroid contamination, with regions in closer proximity to choroid more likely to be impacted such as hippocampus, cervical spinal cord, substantia nigra, hypothalamus, and amygdala. 
+We used the *TTR, Ttr* gene as a marker to query the gene expression omnibus (GEO) database for transcriptome studies of brain tissue and identified at least some level of likely choroid contamination in many studies which  may have confounded data analysis. We also analyzed the human genotype-tissue expression (GTEx) database and found choroid contamination, with regions in closer proximity to choroid more likely to be impacted such as hippocampus, cervical spinal cord, substantia nigra, hypothalamus, and amygdala. 
 We suggest that some studies may warrant a reevaluation with removal of choroid contaminated samples, or where choroid expression is accounted for in the statistical modeling. Additionally, we suggest that a simple RT-qPCR or Western blot for choroid markers would mitigate unintended choroid contamination for any experiment, but particularly for samples intended for more costly omic profiling. 
 
 Here we provide our scripts for the following: 
