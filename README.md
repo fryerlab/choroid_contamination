@@ -26,12 +26,12 @@ We suggest that some studies may warrant a reevaluation with removal of choroid 
 
 The following command will take a list of GEO web profile URLs and compute a one way ANOVA and assign the dataset to a rank priority value. 
 ```
-python <command>
+python GEO/geo.py
 ```
 
 The following command will create a pie chart of results of the GEO web scraping. Additionally, the command will compute a false discovery rate of the p-values from the one way ANOVA tests computed in step 1 above. 
 ```
-Rscript pieChart.R
+Rscript GEO/pieChart.R
 ```
 
 ## STEP 2: Allen Brain Atlas - Gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
