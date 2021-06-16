@@ -53,7 +53,7 @@ Name | email | github ID
 --- | --- |  ---
 Kimberly Olney | olney.kimberly@mayo.edu | @olneykimberly
 Kennedi Todd | todd.kennedi@mayo.edu | @kenneditodd
-Praveen Pallegar | Pallegar.Praveen@mayo.edu | 
+Praveen Pallegar | Pallegar.Praveen@mayo.edu | @pallegar
 Melissa A. Wilson | | 
 John D. Fryer| fryer.john@mayo.edu | 
 
