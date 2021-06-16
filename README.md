@@ -52,7 +52,7 @@ python scripts/parse_gtex.py --data rna --config GTEx_configs/Liver_config.json 
 Name | email | github ID
 --- | --- |  ---
 Kimberly Olney | olney.kimberly@mayo.edu | @olneykimberly
-Kennedi Todd | todd.kennedi@mayo.edu | 
+Kennedi Todd | todd.kennedi@mayo.edu | @kenneditodd
 Praveen Pallegar | Pallegar.Praveen@mayo.edu | 
 Melissa A. Wilson | | 
 John D. Fryer| fryer.john@mayo.edu | 
