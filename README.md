@@ -47,6 +47,22 @@ save the files in the 02_AllenBrainAtlas directory
 export RSTUDIO_PANDOC=/Applications/RStudio\ 2.app/Contents/MacOS/pandoc
 Rscript -e "rmarkdown::render('Allen_create_hippocampus_counts.Rmd', params=list(args = myarg))"
 ``` 
+
+Plot TTR percentile rank in Allen Brain tissue regions
+
+```
+Rscript Allen_TTR_rank.R
+``` 
+
+Differential expression between likely not contaminated samples and samples that likely do have choroid contamination 
+Export RSTUDIO_PANDOC only needs to be run once
+```
+export RSTUDIO_PANDOC=/Applications/RStudio\ 2.app/Contents/MacOS/pandoc
+Rscript -e "rmarkdown::render('Allen_hip_DEGs.Rmd', params=list(args = myarg))"
+``` 
+
+
+
 ## STEP 3: GTEx - Gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
 1. Download GTEx TPM counts and metadata files.
 2. Subset the GTEx TPM count file by tissue type. 

@@ -8,7 +8,7 @@ pdf_document: default
 
 Set working directory.
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "/Users/m214960/Documents/Allen_Brain_Atlas")
+#knitr::opts_knit$set(root.dir = "")
 ```
 
 Load necessary packages.
