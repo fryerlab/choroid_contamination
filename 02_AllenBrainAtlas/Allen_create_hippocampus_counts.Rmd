@@ -16,7 +16,7 @@ library(data.table)  # fread()
 library(rtracklayer)  # to import gtf file
 library(data.table)
 library(edgeR)
-library(rtracklayer)
+library(IsoformSwitchAnalyzeR)
 ```
 
 Get info for downloading files.
@@ -77,10 +77,6 @@ Check to see if our gene_id columns match.
 We will save this data for all future downloaded files.
 ```{r}
 all.equal(gene.info$gene_id, file$gene_id)
-```
-
-Output files.
-```{r}
 write.table(gene.info, "geneInfo.txt", sep = "\t")
 ```
 
@@ -90,6 +86,8 @@ url_path <- paste0("http://aging.brain-map.org", links.hip[1])
 file <- fread(url_path, header = TRUE)
 ```
 We will subset the TPM column.
+
+HIP
 ```{r}
 counts1 <- data.frame(row.names = 1:50283)
 
@@ -101,9 +99,7 @@ for (i in 1:20) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts2 <- data.frame(row.names = 1:50283)
 
 for (i in 21:40) {
@@ -114,9 +110,7 @@ for (i in 21:40) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts3 <- data.frame(row.names = 1:50283)
 
 for (i in 41:60) {
@@ -126,9 +120,7 @@ for (i in 41:60) {
   counts3 <- cbind(counts3, file)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts4 <- data.frame(row.names = 1:50283)
 
 for (i in 61:80) {
@@ -139,9 +131,7 @@ for (i in 61:80) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts5 <- data.frame(row.names = 1:50283)
 
 for (i in 81:94) {
@@ -152,10 +142,7 @@ for (i in 81:94) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-Create final counts file.
-```{r}
 counts <- cbind(counts1, counts2, counts3, counts4, counts5)
 colnames(counts) <- c(donorid.hip)
 rownames(counts) <- gene.info$gene_id
@@ -190,7 +177,7 @@ rnaid.FWM <- df.FWM$rnaseq_profile_id
 donorsex.FWM <- df.FWM$sex
 ```
 
-
+FWM
 ```{r}
 counts1 <- data.frame(row.names = 1:50283)
 
@@ -202,9 +189,7 @@ for (i in 1:20) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts2 <- data.frame(row.names = 1:50283)
 
 for (i in 21:40) {
@@ -215,9 +200,7 @@ for (i in 21:40) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts3 <- data.frame(row.names = 1:50283)
 
 for (i in 41:60) {
@@ -227,9 +210,7 @@ for (i in 41:60) {
   counts3 <- cbind(counts3, file)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts4 <- data.frame(row.names = 1:50283)
 
 for (i in 61:80) {
@@ -240,9 +221,7 @@ for (i in 61:80) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts5 <- data.frame(row.names = 1:50283)
 # only 92 for FWM 
 for (i in 81:93) {
@@ -253,10 +232,7 @@ for (i in 81:93) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-Create final counts file.
-```{r}
 counts <- cbind(counts1, counts2, counts3, counts4, counts5)
 colnames(counts) <- c(donorid.FWM)
 rownames(counts) <- gene.info$gene_id
@@ -291,7 +267,7 @@ rnaid.PCx <- df.PCx$rnaseq_profile_id
 donorsex.PCx <- df.PCx$sex
 ```
 
-
+PCx
 ```{r}
 counts1 <- data.frame(row.names = 1:50283)
 
@@ -303,8 +279,7 @@ for (i in 1:8) {
   print(i)
   Sys.sleep(5)
 }
-```
-```{r}
+
 counts1.2 <- data.frame(row.names = 1:50283)
 
 for (i in 9:20) {
@@ -315,9 +290,7 @@ for (i in 9:20) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts2 <- data.frame(row.names = 1:50283)
 
 for (i in 21:40) {
@@ -328,9 +301,7 @@ for (i in 21:40) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts3 <- data.frame(row.names = 1:50283)
 
 for (i in 41:60) {
@@ -340,9 +311,7 @@ for (i in 41:60) {
   counts3 <- cbind(counts3, file)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts4 <- data.frame(row.names = 1:50283)
 
 for (i in 61:80) {
@@ -353,9 +322,7 @@ for (i in 61:80) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-```{r}
 counts5 <- data.frame(row.names = 1:50283)
 
 for (i in 81:91) {
@@ -366,10 +333,7 @@ for (i in 81:91) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-Create final counts file.
-```{r}
 counts <- cbind(counts1, counts2, counts3, counts4, counts5)
 colnames(counts) <- c(donorid.PCx)
 rownames(counts) <- gene.info$gene_id
@@ -381,9 +345,6 @@ write.table(counts,"PCx_tpm_counts.txt", sep = "\t")
 write.table(sex.info, "PCx_donorid_sex.txt", sep = "\t")
 ```
 
-
-TCx
-Get info for downloading files.
 ```{r}
 data.files <- read.csv(file = "tbi_data_files.csv",header = TRUE, sep = ",")
 donor.info <- read.csv(file = "DonorInformation.csv", header = TRUE, sep = ",")
@@ -485,10 +446,7 @@ for (i in 99:99) {
   print(i)
   Sys.sleep(5)
 }
-```
 
-Create final counts file.
-```{r}
 counts <- cbind(counts1, counts2, counts3, counts4, counts5)
 colnames(counts) <- c(donorid.TCx)
 rownames(counts) <- gene.info$gene_id
@@ -499,3 +457,4 @@ colnames(sex.info) <- c("donor_id","sex")
 write.table(counts,"TCx_tpm_counts.txt", sep = "\t")
 write.table(sex.info, "TCx_donorid_sex.txt", sep = "\t")
 ```
+
