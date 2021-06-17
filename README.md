@@ -30,7 +30,7 @@ First, unzip any files and folders.
 
 The following command will take a list of GEO web profile URLs and compute a one way ANOVA and assign the dataset to a rank priority value. 
 ```
-python GEO/geo.py
+python geo.py
 ```
 
 The following command will create a pie chart of results of the GEO web scraping. Additionally, the command will compute a false discovery rate of the p-values from the one way ANOVA tests computed in step 1 above. 
