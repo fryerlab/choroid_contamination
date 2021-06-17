@@ -4,7 +4,8 @@ library(reshape)
 library(scales)
 
 # set working directory
-setwd("/GEO/")
+setwd(".")
+#setwd(getSrcDirectory()[1])
 
 # read in GEO wed scraping file
 rank <- read.csv("title_and_rank_priority.csv")
