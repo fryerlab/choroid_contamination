@@ -36,10 +36,16 @@ Rscript GEO/pieChart.R
 
 ## STEP 2: Allen Brain Atlas - Gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
 1. Download human TPM counts and metadata files.
+Got to the Allen Brain Atlas website here: https://aging.brain-map.org/download/index
+Download the following files: 
+- tbi_data_files.csv
+- DonorInformation.csv
+- rsem_GRCh38.p2.gtf
+save the files in the 02_AllenBrainAtlas directory
+
 ```
 export RSTUDIO_PANDOC=/Applications/RStudio\ 2.app/Contents/MacOS/pandoc
-Rscript -e "rmarkdown::render('Allen_create_hippocampus_counts.Rmd',
-params=list(args = myarg))"
+Rscript -e "rmarkdown::render('Allen_create_hippocampus_counts.Rmd', params=list(args = myarg))"
 ``` 
 ## STEP 3: GTEx - Gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
 1. Download GTEx TPM counts and metadata files.
