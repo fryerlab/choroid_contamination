@@ -12,6 +12,10 @@ We suggest that some studies may warrant a reevaluation with removal of choroid 
 3) GTEx gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
 
 ## STEP 1: GEO - quantify the scope of potential choroid plexus contamination among human and mouse brain datasets.
+within the GEO directory go through the following steps. 
+First, unzip any files and folders. 
+
+
 1. GEO rank category definitions for *TTR* or *Ttr* contamination or lack of contamination among samples within a dataset. One way ANOVA to determine if there are statistially significant differences betwee/among the means for *TTR/Ttr* expression. Datasets will be placed in one of the following scores: 
 
 
@@ -35,6 +39,10 @@ Rscript GEO/pieChart.R
 ```
 
 ## STEP 2: Allen Brain Atlas - Gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
+within the  Allen Brain Atlas directory go through the following steps. 
+First, unzip any files and folders. 
+
+
 1. Download human TPM counts and metadata files.
 Got to the Allen Brain Atlas website here: https://aging.brain-map.org/download/index
 Download the following files: 
@@ -48,31 +56,37 @@ export RSTUDIO_PANDOC=/Applications/RStudio\ 2.app/Contents/MacOS/pandoc
 Rscript -e "rmarkdown::render('Allen_create_hippocampus_counts.Rmd', params=list(args = myarg))"
 ``` 
 
-Plot TTR percentile rank in Allen Brain tissue regions
+2. Plot TTR percentile rank in Allen Brain tissue regions
 
 ```
 Rscript Allen_TTR_rank.R
 ``` 
 
-Differential expression between likely not contaminated samples and samples that likely do have choroid contamination 
+3. Differential expression between likely not contaminated samples and samples that likely do have choroid contamination 
 Export RSTUDIO_PANDOC only needs to be run once
 ```
 export RSTUDIO_PANDOC=/Applications/RStudio\ 2.app/Contents/MacOS/pandoc
 Rscript -e "rmarkdown::render('Allen_hip_DEGs.Rmd', params=list(args = myarg))"
 ``` 
 
-
-
 ## STEP 3: GTEx - Gene differential expression between likely contaminated samples and samples that likely do not have choroid contamination.
-1. Download GTEx TPM counts and metadata files.
-2. Subset the GTEx TPM count file by tissue type. 
- - Example using liver where one specifies the samples to be subsetted via the config file
-```
-python scripts/parse_gtex.py --data rna --config GTEx_configs/Liver_config.json --gtex_file data/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm_clean.gct --subset_samples_outfile Liver_counts.tsv
-```
-- Instead of providing the samples to be subsetted via the config file, you can also provide a sample via `--sample` or a file with each sample on a row via `--samples_file`
-3. For each tissue_counts.tsv, percentile rank (aka bin) the expression for each gene for each sample. Every gene will have a rank expression from 0-100. Zero being no expression, and 100 being the highest expressed genes for that sample. Plot a violin jitter showing rank values of TTR expression for each brain tissue. 
+within the GTEx directory go through the following steps. 
+First, unzip any files and folders. 
 
+0.GTEx TPM counts and metadata files were downloaded from https://gtexportal.org/home/
+Config files for each tissue are already provided in the GTEx_config folder. 
+TTR percential ranks file is provided. 
+
+1. For each tissue_counts.tsv, percentile rank (aka bin) the expression for each gene for each sample. Every gene will have a rank expression from 0-100. Zero being no expression, and 100 being the highest expressed genes for that sample. Plot a violin jitter showing rank values of TTR expression for each brain tissue. 
+```
+Rscript GTEx_TTR_rank_violin.R 
+```
+
+2. Differential expression between likely not contaminated samples and samples that likely do have choroid contamination 
+```
+export RSTUDIO_PANDOC=/Applications/RStudio\ 2.app/Contents/MacOS/pandoc
+Rscript -e "rmarkdown::render('GTEx_DEG_all_samples.Rmd', params=list(args = myarg))"
+```
 
 ## Group Members
 Name | email | github ID
@@ -80,6 +94,6 @@ Name | email | github ID
 Kimberly Olney | olney.kimberly@mayo.edu | @olneykimberly
 Kennedi Todd | todd.kennedi@mayo.edu | @kenneditodd
 Praveen Pallegar | Pallegar.Praveen@mayo.edu | @pallegar
-Melissa A. Wilson | | 
+Melissa A. Wilson | mwilsons@asu.edu | 
 John D. Fryer| fryer.john@mayo.edu | 
 
