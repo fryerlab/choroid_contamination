@@ -49,6 +49,7 @@ Download the following files:
 - tbi_data_files.csv
 - DonorInformation.csv
 - rsem_GRCh38.p2.gtf
+
 save the files in the 02_AllenBrainAtlas directory
 
 ```
