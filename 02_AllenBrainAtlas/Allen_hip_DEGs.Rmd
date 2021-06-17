@@ -308,53 +308,47 @@ colnames(dge.filtered.norm$samples)
 
 Specify variables to consider
 ```{r}
-register(SnowParam(4)) # work in parallel
+#register(SnowParam(4)) # work in parallel
 
 # geneExpr: matrix of gene expression values
 # info: information/metadata about each sample
-geneExpr <- as.matrix(dge.filtered.norm$counts)
-info <- as.data.frame(dge.filtered.norm$samples)
+#geneExpr <- as.matrix(dge.filtered.norm$counts)
+#info <- as.data.frame(dge.filtered.norm$samples)
 
 # Age is USUALLY continuous so model it as a fixed effect "age"
 # However, this metadata categorizes it into bins
 # Sex is categorical, so model them as random effects "(1|sex)"
 # Note the syntax
-form <- ~ (1|group) + 
-  (1|age) + 
-  (1|sex) + 
-  (1|apo_e4_allele) +
-  (1|cerad) +
-  (1|dsm_iv_clinical_diagnosis) +
-  (1|nincds_arda_diagnosis) +
-  (1|act_demented) +
-  (1|braak) +
-  (1|nia_reagan) +
-  (1|hemisphere)
+#form <- ~ (1|group) + 
+#  (1|age) + 
+#  (1|sex) + 
+#  (1|apo_e4_allele) +
+#  (1|cerad) +
+#  (1|dsm_iv_clinical_diagnosis) +
+#  (1|nincds_arda_diagnosis) +
+#  (1|act_demented) +
+#  (1|braak) +
+#  (1|nia_reagan) +
+#  (1|hemisphere)
 
-varPart <- fitExtractVarPartModel(geneExpr, form, info)
-vp <- sortCols(varPart)
-```
+#varPart <- fitExtractVarPartModel(geneExpr, form, info)
+#vp <- sortCols(varPart)
 
-Violin plots
-```{r}
-plotVarPart(vp)
-```
+#Violin plots
+#plotVarPart(vp)
 
-```{r}
-table(dge.filtered$samples$dsm_iv_clinical_diagnosis)
-```
+#table(dge.filtered$samples$dsm_iv_clinical_diagnosis)
 
+#Percent bars
 
-Percent bars
-```{r}
-plotPercentBars(vp[1:10,])
+#plotPercentBars(vp[1:10,])
 ```
 
 ```{r}
 # sort genes based on variance explained by group
-varPart.df <- as.data.frame(varPart)
-order.varPart.df <- varPart.df[order(varPart.df$group, decreasing = TRUE),]
-order.varPart.df["group"]
+#varPart.df <- as.data.frame(varPart)
+#order.varPart.df <- varPart.df[order(varPart.df$group, #decreasing = TRUE),]
+#order.varPart.df["group"]
 
 ```
 
@@ -448,34 +442,34 @@ as.data.frame(dge.group$samples$group, sample_group_color)
 
 ```{r}
 # We estimate the variance for each row in the logcounts matrix
-logcounts <- cpm(dge.group, log = TRUE) # log2 values
-var_genes <- apply(logcounts, 1, var)
+#logcounts <- cpm(dge.group, log = TRUE) # log2 values
+#var_genes <- apply(logcounts, 1, var)
 
 # Get the gene names for the top 100 most variable genes
-select_var <- names(sort(var_genes, decreasing=TRUE))[1:50]
-select_var
+#select_var <- names(sort(var_genes, decreasing=TRUE))[1:50]
+#select_var
 
 # Subset logcounts matrix
-highly_variable_lcpm <- logcounts[select_var,]
+#highly_variable_lcpm <- logcounts[select_var,]
 ```
 
 
 ```{r}
 
-my_palette <- colorRampPalette(c("red", "black", "green"))
+#my_palette <- colorRampPalette(c("red", "black", "green"))
 
 # Plot the heatmap
-map <- heatmap.2(highly_variable_lcpm, 
-          main = "Top 50 most variable genes across samples",
-          col = my_palette, # heatmap color scale
-          ColSideColors = sample_group_color,
-          trace = "none",
-          dendrogram = "row",
-          Colv = sample_group_order,
-          colCol = sample_group_color,
-          srtCol = 45,
-          xlab = "Samples"
-          )
+#map <- heatmap.2(highly_variable_lcpm, 
+#          main = "Top 50 most variable genes across samples",
+#          col = my_palette, # heatmap color scale
+#          ColSideColors = sample_group_color,
+#          trace = "none",
+#          dendrogram = "row",
+ #         Colv = sample_group_order,
+ #         colCol = sample_group_color,
+ #         srtCol = 45,
+ #         xlab = "Samples"
+ #         )
 ```
 
 
