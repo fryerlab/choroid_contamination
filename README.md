@@ -73,8 +73,8 @@ Rscript -e "rmarkdown::render('Allen_hip_DEGs.Rmd', params=list(args = myarg))"
 within the GTEx directory go through the following steps. 
 First, unzip any files and folders. 
 
-0.GTEx TPM counts and metadata files were downloaded from https://gtexportal.org/home/
-Config files for each tissue are already provided in the GTEx_config folder. 
+GTEx TPM counts and metadata files were downloaded from https://gtexportal.org/home/
+Config files for each tissue are provided in the GTEx_config folder. 
 TTR percential ranks file is provided. 
 
 1. For each tissue_counts.tsv, percentile rank (aka bin) the expression for each gene for each sample. Every gene will have a rank expression from 0-100. Zero being no expression, and 100 being the highest expressed genes for that sample. Plot a violin jitter showing rank values of TTR expression for each brain tissue. 
