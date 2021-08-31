@@ -1,6 +1,7 @@
 # GTEx
 - Scripts
-  - There are four R Markdown files.  Three scripts classify choroid contaimination based on TTR expression (all samples, males, females).  The fourth script classifies choroid contaimination based on FOLR1 expression in all samples.
+  - Three scripts classify choroid contaimination based on TTR expression (all samples, males, females).  
+  - One script classifies choroid contaimination based on FOLR1 expression in all samples.
 - Files
   - This folder contains the iput files (counts, metadata, annotation) for all scripts.
 - DEGs
