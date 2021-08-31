@@ -1,0 +1,663 @@
+---
+title: "Choroid Contamination: TTR Groups"
+author: "Kennedi Todd"
+date: "8/26/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setwd, include=FALSE}
+knitr::opts_knit$set(root.dir = "/Users/m214960/Documents/GTEx")
+```
+
+Load packages.
+```{r packages, results='hide'}
+library(BiocParallel)
+library(dplyr)
+library(edgeR)
+library(ggplot2)
+library(ggrepel)
+library(gplots)
+library(grid)
+library(gridExtra)
+library(knitr)
+library(stringr)
+library(variancePartition)
+```
+
+Read in files.
+```{r}
+# read in counts
+counts <- read.delim("Files/Brain_Hippocampus", 
+                     header = TRUE, 
+                     sep = "\t",
+                     row.names = 1)
+# read in metadata
+metadata <- read.delim(
+  "Files/GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt",
+  header = TRUE,
+  sep = "\t")
+# read in gene annotation
+gtf.file <- "Files/gencode.v26.GRCh38.genes.gtf"
+gtf.gr <- rtracklayer::import(gtf.file)
+gtf.df <- as.data.frame(gtf.gr)
+gtf.df <- gtf.df[,c("type","gene_type","gene_name","gene_id","seqnames")]
+gtf.genes <- gtf.df[gtf.df$type == "gene",]
+```
+
+Reformat metadata and counts.
+```{r}
+# reformat metadata
+colnames(metadata) <- c("subject_id","sex","age","hardy_scale")
+
+# reformat counts
+rownames(counts) <- counts$Name
+counts <- counts[gtf.genes$gene_id,] # put counts in same order as gtf.genes
+all.equal(counts$Name, gtf.genes$gene_id) # check
+counts <- counts[,-c(1,2,200,201)]  # remove mean, median, gene_id, gene_name
+```
+
+Rename counts columns to match metadata.
+```{r}
+# change all hyphens to periods
+metadata$subject_id <- gsub("-",".",metadata$subject_id)
+rownames(metadata) <- metadata$subject_id
+
+# parse subject_id out of counts column names
+old.names <- colnames(counts)  # GTEX.13PDP.0011.R1a.SM.5PNX5
+new.names <- str_match(old.names, "(GTEX\\.[\\d\\w]+)\\.\\d+")[,2]
+head(cbind(old.names, new.names)) # check
+colnames(counts) <- new.names
+
+# Put metadata rows in the same order as counts columns
+metadata <- metadata[colnames(counts),]
+
+# check
+all.equal(rownames(metadata), colnames(counts))
+```
+
+Create dge object
+```{r}
+dge <- DGEList(counts, 
+               samples = metadata, 
+               genes = gtf.genes)
+```
+
+Look to see if any NA values or replicated gene names.
+```{r}
+table(is.na(gtf.genes$gene_name))
+table(duplicated(gtf.genes$gene_name))
+```
+There are no NA values.  However, 1,608 gene names are repetitive.
+
+View the repetitive gene names.
+```{r}
+table(gtf.genes$gene_name[duplicated(gtf.genes$gene_name)])
+```
+
+View the gene_type for the repetitive genes.
+This will help determine if we should remove repetitive gene names.
+```{r}
+table(gtf.genes$gene_type[duplicated(gtf.genes$gene_name)])
+```
+
+Remove duplicated gene names which are mainly non-coding RNAs.
+```{r}
+removeDuplicated <- !duplicated(gtf.genes$gene_name)  # true when not duplicated
+dge <- dge[removeDuplicated,,keep.lib.sizes=FALSE]
+dim(dge)
+```
+
+Remove mitochondrial genes.  They are super abundant and can skew data.
+```{r}
+removeMT <-dge$genes$seqnames != "chrM" # true when not chrM
+dge <- dge[removeMT,,keep.lib.sizes = FALSE]
+dim(dge)
+```
+
+Make gene_name the row name.
+```{r}
+rownames(dge$counts) <- dge$genes$gene_name
+```
+
+Change sex column from numbers to letters.
+```{r}
+# male = 1, female = 2
+sex_nums <- as.numeric(dge$samples$sex)
+sex_letters <- gsub(1, "M", sex_nums)
+sex_letters <- gsub(2, "F", sex_letters)
+head(cbind(sex_nums, sex_letters)) # check
+dge$samples$sex <- sex_letters
+```
+
+-----------------------------TTR TPM HISTOGRAM----------------------------------
+
+Data is already in TPM (transcripts per million).
+Create histogram of TPM TTR values.
+```{r}
+ttr.counts <- as.data.frame(dge$counts["TTR",])
+colnames(ttr.counts) <- "ttr.counts"
+
+log2.ttr.counts <- log2(ttr.counts + 0.01)
+colnames(log2.ttr.counts) <- "log2.ttr.counts"
+```
+
+```{r}
+h1 <- ggplot(ttr.counts, aes(x = ttr.counts)) + 
+  geom_histogram(bins = 100, fill = "gray", color = "black") + 
+  labs(title = "A.", x=NULL, y=NULL) +
+  xlab("TTR TPM") + ylab("# of Samples") + 
+  geom_vline(xintercept = 20, col = "red") +
+  theme_bw()
+
+h2 <- ggplot(ttr.counts, aes(x = ttr.counts)) + 
+  geom_histogram(bins = 100, fill = "gray", color = "black") + 
+  labs(title = "B.", x=NULL, y=NULL) +
+  xlab("TTR TPM") + ylab("# of Samples") +
+  xlim(0, 500) + geom_vline(xintercept = 20, col = "red") + 
+  theme_bw() 
+
+h3 <- ggplot(log2.ttr.counts, aes(x = log2.ttr.counts)) + 
+  geom_histogram(bins = 100, fill = "gray", color = "black") + 
+  labs(title = "GTEx\nHippocampus", x=NULL, y=NULL) +
+  xlab("log2(TTR TPM)") + ylab("# of Samples") +
+  theme_bw() +
+  geom_vline(xintercept = log2(20) + 1, col = "blue") +
+  geom_vline(xintercept = log2(20) - 1, col = "blue")
+```
+
+Arrange graphs in grid.
+```{r}
+plots1 <- list(h1,h2,h3)
+
+layout1 <- rbind(c(1,2),c(3))
+
+grid1 <- grid.arrange(grobs = plots1, layout_matrix = layout1)
+```
+
+------------------------------ASSIGN DIRTY/CLEAN/NEITHER------------------------
+
+Lets looks at groups +/- 1 of the cutoff
+```{r}
+cutoff <- log2(20)
+clean_threshold <- cutoff - 1 # values <= this are clean
+clean_threshold
+cutoff 
+dirty_threshold <- cutoff + 1 # values >= this are dirty
+dirty_threshold
+```
+
+Assign clean or dirty
+```{r}
+clean_or_dirty <- vector()
+vector.log2.ttr.counts <- as.vector(log2.ttr.counts$log2.ttr.counts)
+
+for (i in 1:length(vector.log2.ttr.counts)){
+  if (vector.log2.ttr.counts[i] <= clean_threshold){
+    clean_or_dirty <- c(clean_or_dirty, "clean")
+  }
+  else if (vector.log2.ttr.counts[i] >= dirty_threshold){
+    clean_or_dirty <- c(clean_or_dirty, "dirty")
+  }
+  else {
+    clean_or_dirty <- c(clean_or_dirty, "neither")
+  }
+}
+table(clean_or_dirty)
+```
+
+
+```{r}
+dge$samples$group <- factor(clean_or_dirty)
+head(dge$samples)
+```
+
+```{r}
+h4 <- h3 + 
+  annotate("rect", 
+              xmin = -Inf,
+              xmax = clean_threshold, 
+              ymin = 0, 
+              ymax=Inf, 
+              alpha=0.2, 
+              fill="deepskyblue") +
+  annotate("rect", 
+              xmin = dirty_threshold,
+              xmax = Inf, 
+              ymin = 0, 
+              ymax=Inf, 
+              alpha=0.2, 
+              fill="chocolate4")
+h5 <- h1 + 
+  annotate("rect", 
+              xmin = -Inf,
+              xmax = clean_threshold, 
+              ymin = 0, 
+              ymax=Inf, 
+              alpha=0.2, 
+              fill="deepskyblue") +
+  annotate("rect", 
+              xmin = dirty_threshold,
+              xmax = Inf, 
+              ymin = 0, 
+              ymax=Inf, 
+              alpha=0.2, 
+              fill="chocolate4")
+h4
+h5
+```
+
+```{r}
+setwd("/Users/m214960/Documents/GTEx")
+pdf(
+  "Figures/GTEx_TTR_histogram.pdf",
+  width = 4, height = 4)
+h4
+```
+
+
+-----------------------FILTER LOWLY EXPRESSED GENES-----------------------------
+
+TPM to CPM
+```{r}
+cpm <- cpm(dge)
+```
+
+Filter
+```{r}
+# produces a logical matrix
+thresh <- cpm > 2 # cpm greater than 2
+
+# keep genes that have at least 3 TRUES in each row of thresh
+keep <- rowSums(thresh) >= 3
+summary(keep)
+
+# redefine object, filter by logical
+dge.filtered <- dge[keep,, keep.lib.sizes = FALSE]
+
+dim(dge)
+dim(dge.filtered)
+```
+Went from 54,592 genes to 18,845 genes.
+
+--------------------------TRIMMED MEAN OF M-VALUES------------------------------
+
+Now, we want to normalize gene expression distributions. We do this by normalizing 
+library size differences in each sample. The method Trimmed Mean of M-values (TMM) 
+is used with the calcNormFactors in the edgeR package. The normalization factors 
+calculated here are used as a scaling factor for the library size.
+  
+Trimmed mean of M values (TMM) normalization estimates sequencing
+depth after excluding genes for which the ratio of counts between a pair
+of experiments is too extreme or for which the average expression is too
+extreme. The edgeR software implements a TMM normalization (Biostar Handbook 2020).
+
+```{r}
+# creates another large DGEList 
+dge.filtered.norm <- calcNormFactors(dge.filtered, method = "TMM")
+
+# norm factor distribution
+summary(dge.filtered.norm$samples$norm.factors)
+```
+Looking to be around ~1.
+
+
+-------------------------------Variance Partition-------------------------------
+See what options we have to choose from.
+```{r}
+colnames(dge.filtered.norm$samples)
+```
+
+Specify variables to consider
+```{r}
+register(SnowParam(4)) # work in parallel
+
+# geneExpr: matrix of gene expression values
+# info: information/metadata about each sample
+geneExpr <- as.matrix(dge.filtered.norm$counts)
+info <- as.data.frame(dge.filtered.norm$samples)
+info$hardy_scale <- as.factor(info$hardy_scale)
+
+# Age is USUALLY continuous so model it as a fixed effect "age"
+# However, this metadata categorizes it into bins so it's categorical
+# Sex is categorical, so model them as random effects "(1|sex)"
+# Note the syntax
+form <- ~ (1|group) + 
+  (1|age) + 
+  (1|sex) + 
+  (1|hardy_scale)
+
+varPart <- fitExtractVarPartModel(geneExpr, form, info)
+vp <- sortCols(varPart)
+```
+
+Violin plots
+```{r}
+plotVarPart(vp)
+```
+
+Percent bars
+```{r}
+plotPercentBars(vp[1:10,])
+```
+
+```{r}
+# sort genes based on variance explained by group
+varPart.df <- as.data.frame(varPart)
+order.varPart.df <- varPart.df[order(varPart.df$group, decreasing = TRUE),]
+head(order.varPart.df["group"])
+
+```
+
+-----------------------------DESIGN MATRIX--------------------------------------
+
+```{r}
+sex <- dge.filtered.norm$samples$sex
+age <- dge.filtered.norm$samples$age
+```
+
+Create a design matrix and specify the samples we want to compare to each other.
+```{r}
+# interaction computes a factor which represents the interaction of the given factors
+group <- interaction(dge.filtered$samples$group)
+
+design <- model.matrix(~ 0 + 
+                         group + 
+                         sex + # remove if subset by sex
+                         age)
+colnames(design) <- make.names(colnames(design))
+colnames(design)[1:2] <- c("clean","dirty")
+```
+
+Run voom with quality weights. This combines observational-level weights with
+  sample-specific quality weights in an experiment.
+Normalizes expression intensities so that the log-ratios have similar distributions
+  across a set of samples.
+To quantile normalize, add normalize.method = "quantile".
+
+Quality weights in RNA-seq data improves data quality when samples with high
+  variance are present.  This variation is modeled by taking into account
+  global intensity-dependent trends using voom.  
+Sample-specific variability is taken into account with a log-linear model that 
+  shares parameters between genes.
+https://doi.org/10.1093/nar/gkv412
+
+
+```{r}
+v <- voomWithQualityWeights(dge.filtered.norm, design, plot = TRUE)
+```
+
+---------------------------------MDS PLOT---------------------------------------
+
+```{r}
+# blue is clean, brown is dirty
+group_colors <- c("deepskyblue","chocolate4","gray")[v$targets$group]
+# F or M for points
+point_shapes <- v$targets$sex 
+# Check everything matches
+head(data.frame(v$targets$group, group_colors, v$targets$sex, point_shapes)) 
+```
+
+
+```{r}
+#pdf("Figures/GTEx_TTR_MDS_voom.pdf", width = 4, height = 4)
+
+mds <- plotMDS(
+  v, # our data object
+  top = 10, # only looking at top 10 genes
+  pch = point_shapes,
+  cex = 1, # point size
+  dim.plot = c(1,2), # specifying principal components to be plotted
+  plot = TRUE, # if TRUE then plot is created on current graphics device
+  col = group_colors # assigning our colors for each genotype
+)
+
+legend(
+  "topright",
+  pch = 16,
+  legend = c("clean","dirty","neither"),
+  col = c("deepskyblue","chocolate4","gray"),
+  cex = 0.8
+)
+
+title("Top 10 Genes")
+```
+
+---------------------------------LINEAR MODELS----------------------------------
+
+Fit linear models for comparisons of interest.
+Linear modeling in limma is carried out using the lmFit and contrasts.fit
+  functions.
+  
+What do lm.fit and contrasts.fit do?
+  1) Fit a separate model to the expression values for each gene.
+  2) An empirical Bayes moderation is carried out by borrowing info across all
+     the gene to obtain more precise estimates of gene-wise variability.
+  3) The model's residual variances are plotted against average expression 
+     values in the next figure.
+
+It can be seen from this plot that the variance is no longer dependent on the 
+  mean expression level.
+  
+```{r}
+# Fits linear model for each gene given a series of arrays
+fit <- lmFit(
+  v,  # object containing log-expression values for a series of arrays
+  design  # design matrix
+  )
+
+```
+
+
+Contrast design for differential expression.
+```{r}
+contrasts <-
+  makeContrasts(
+    dirty_vs_clean = dirty - clean,
+    levels = colnames(design)
+  )
+
+head(contrasts)
+```
+
+Assign allComparisons to a vector for later use.
+```{r}
+allComparisons <- colnames(contrasts)
+allComparisons # check
+```
+
+Run contrast analysis.
+Given a linear model fit, compute estimated coefficients and standard errors
+  for a given set of contrasts.
+```{r}
+vfit <- contrasts.fit(fit, contrasts = contrasts)
+```
+
+Compute differential expression based on the empirical Bayes moderation of the
+  standard errors towards a common value.
+```{r}
+veBayesFit <- eBayes(vfit)
+plotSA(veBayesFit, main = "Final Model: Mean-variance Trend")
+```
+
+
+decideTests() identifies which genes are significantly differentially expressed
+  for each contrast from a fit object containing p-values and test statistics.
+```{r}
+sumTable <- 
+  summary(decideTests(
+    vfit,  # object
+    # by default the method = "separate"
+    adjust.method = "BH", 
+    p.value = 0.05,
+    lfc = 1  # numeric, minimum absolute log2-fold change required
+  ))
+
+head(sumTable)
+```
+
+--------------------------------------DEG TABLES--------------------------------
+
+For each comparison...extract table of the top-ranked genes (DEGs) from a linear 
+model fit AND output a table.
+  
+NOTE: Log2FC of 1 is equivalent to linear fold change of 2.
+
+```{r}
+coef = 1
+for (i in allComparisons) {
+  
+  # p < 1, log2fc > 0 ----------------------------------------------------------
+  vTopTableAll <-
+    topTable(
+      veBayesFit, 
+      coef = coef,  
+      n = Inf, 
+      p.value = 1,
+      lfc = 0 
+    )
+  #output as txt file
+  path <- paste("DEGs/DEGs_TTR_", i, "_FDRq1_Log2FC0.txt", sep = "") 
+  write.table(
+    vTopTableAll,
+    path,
+    sep = "\t",
+    row.names = TRUE,
+    quote = FALSE
+  )
+  
+  # p < 0.05, log2fc > 1 -------------------------------------------------------
+  vTopTable1 <-
+    topTable( 
+      veBayesFit,  
+      coef = coef,  
+      n = Inf, 
+      p.value = 0.05,
+      lfc = 1
+    )
+  path <- paste("DEGs/DEGs_TTR_", i, "_FDRq0.05_Log2FC1.txt", sep = "") 
+  write.table(
+    vTopTable1,
+    path,
+    sep = "\t",
+    row.names = TRUE,
+    quote = FALSE
+  )
+
+  # increment the coefficient --------------------------------------------------
+  coef <- coef + 1
+}
+```
+
+
+----------------------------------VOLCANO PLOTS---------------------------------
+
+Using the DEG tables we made, graph a volcano plot.
+Read in file.
+```{r}
+dirty_vs_clean <-
+  read.table(
+    "DEGs/DEGs_TTR_dirty_vs_clean_FDRq1_Log2FC0.txt",
+    header = TRUE,
+    sep = "\t",
+    stringsAsFactors = F
+  )
+```
+
+```{r}
+dirty_vs_clean$gene_symbol <- rownames(dirty_vs_clean)
+```
+
+
+```{r}
+summary(decideTests(
+    vfit,  # object
+    adjust.method = "BH", # by default the method = "separate"
+    p.value = 0.05,
+    lfc = 1
+  ))
+```
+
+```{r}
+color_values <- vector()
+max <- nrow(dirty_vs_clean)
+
+for(i in 1:max){
+  if (dirty_vs_clean$adj.P.Val[i] < 0.05){
+    if (dirty_vs_clean$logFC[i] > 1){
+      color_values <- c(color_values, 1) # 1 when logFC > 1 and pval < 0.05
+    }
+    else if (dirty_vs_clean$logFC[i] < -1){
+      color_values <- c(color_values, 2) # 2 when logFC < -1 and pval < 0.05
+    }
+    else{
+      color_values <- c(color_values, 3) # 3 when -1 =< logFC <= 1 pval < 0.05
+    }
+  }
+  else{
+    color_values <- c(color_values, 3) # 3 when pval >= 0.05
+  }
+}
+
+dirty_vs_clean$color_p0.05_lfc1 <- factor(color_values)
+```
+
+```{r}
+hadjpval <- (-log10(max(dirty_vs_clean$adj.P.Val[dirty_vs_clean$adj.P.Val < 0.05], na.rm=TRUE)))
+hadjpval
+```
+
+```{r}
+p <-
+  ggplot(data = dirty_vs_clean, 
+         aes(x = logFC, # x-axis is logFC
+             y = -log10(adj.P.Val), # y-axis will be log10 of adj.P.Val
+             color = color_p0.05_lfc1)) + # color is based on factored Color column
+  geom_point(size = 2) + # create scatterplot, alpha makes points transparent
+  theme_bw() +
+  theme(legend.position = "none") + # no legend
+  scale_color_manual(values = c("red", "blue", "grey")) + # set factor colors
+  labs(
+    title = "", # no main title
+    x = expression(log[2](FC)), # x-axis title
+    y = expression(-log[10] ~ "(FDR adjusted " ~ italic("p") ~ "-value)") # y-axis title
+  ) +
+  theme(plot.title = element_text(size=12)) +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12)) +
+  geom_hline(yintercept = hadjpval,
+                     colour = "#000000",
+                     linetype = "dashed") +
+  geom_vline(xintercept = 1,
+             colour = "#000000",
+             linetype = "dashed") +
+  geom_vline(xintercept = -1,
+             colour = "#000000",
+             linetype = "dashed") +
+  ggtitle("GTEx\nFDRq < 0.05, -1 > LogFC > 1") +
+  geom_text_repel(data = subset(dirty_vs_clean, 
+                                dirty_vs_clean$color_p0.05_lfc1 == 1),
+                  aes(x = logFC, y= -log10(adj.P.Val), label = gene_name), 
+                  color = "maroon",
+                  fontface="italic",
+                  max.overlaps = getOption("ggrepel.max.overlaps", 
+                                           default = 55)) +
+  geom_text_repel(data = subset(dirty_vs_clean,
+                                dirty_vs_clean$color_p0.05_lfc1 == 2),
+                  aes(x = logFC, y= -log10(adj.P.Val), label = gene_name),
+                  color = "navyblue",
+                  fontface="italic",
+                  max.overlaps = getOption("ggrepel.max.overlaps",
+                                           default = 30))
+p
+```
+
+```{r}
+setwd("/Users/m214960/Documents/GTEx")
+pdf("Figures/GTEx_TTR_volcano.pdf", width = 4, height = 4)
+p
+```
+
