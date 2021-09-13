@@ -1,5 +1,6 @@
 # Allen Brain Atlas
-This will provide the steps for the Allen Brain Atlas differentially expressed genes workflow.
+This will provide the steps for the Allen Brain Atlas differentially expressed genes workflow. Unzip the Files.zip folder prior to running the scripts located in the scripts folder. 
+Also note that you will need to update the working directory of the R scripts prior to running. 
 ## 1. Create a counts matrix 
 - The counts matrix will contains all hippocampus samples from the Allen Brain Atlas Aging, Dementia and TBI dataset.
   - © 2017 Allen Institute for Brain Science. Aging, Dementia and TBI. Available from: https://aging.brain-map.org/

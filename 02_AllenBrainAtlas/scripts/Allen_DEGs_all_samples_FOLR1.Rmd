@@ -1,0 +1,676 @@
+---
+title: "Allen Hippocampus DEGs"
+author: "Kennedi Todd"
+date: "2/15/2021"
+output:
+pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas//")
+```
+
+Load necessary packages.
+```{r packages, message=FALSE}
+library(BiocParallel)
+library(data.table)
+library(edgeR)
+library(ggplot2)
+library(ggrepel) # geom_text_repel()
+library(grid)
+library(gridExtra)
+library(knitr)
+library(limma)
+library(MatchIt)
+library(rtracklayer)
+library(variancePartition)
+```
+
+Read in files.
+```{r}
+setwd("~/TTR/02_AllenBrainAtlas//")
+
+# counts already in TPM
+counts <- read.delim("~/TTR/02_AllenBrainAtlas//Files/hippocampus_tpm_counts.txt", 
+                     header = TRUE, 
+                     sep = "\t")
+gene.info <- read.delim("~/TTR/02_AllenBrainAtlas//Files/geneInfo.txt", 
+                        header = TRUE, 
+                        sep = "\t")
+metadata <- read.delim("~/TTR/02_AllenBrainAtlas//Files/hippocampus_metadata.txt", 
+                       header = TRUE, 
+                       sep = "\t")
+```
+
+Reformat
+```{r}
+# Check that row names of counts file matches gene_id in gene.info
+all.equal(rownames(counts), as.character(gene.info$gene_id))
+
+# Returned true so rename rows with gene_symbol
+rownames(counts) <- gene.info$gene_symbol
+
+# Check that column names of counts file matches donor_id in metadata
+all.equal(colnames(counts), as.character(make.names(metadata$donor_id)))
+```
+
+Create DGE object with our counts, gene.info and metadata.
+```{r}
+dge <- DGEList(counts = counts, genes = gene.info, samples = metadata)
+dim(dge)
+```
+
+Remove MT genes.  They're super abundant and can skew data.
+Allen's annotation file did not provide an easy way to identify chr #.
+We know that NC_012920.1 refers to the MT based on the link below.
+We also expect there to be 37 genes.
+
+https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.28/#/def
+
+```{r}
+table(gene.info$seqnames == "NC_012920.1")
+```
+
+```{r}
+dim(dge)
+keep <- gene.info$seqnames != "NC_012920.1"  # this is the ref for MT
+dge <- dge[keep,, keep.lib.sizes = FALSE]
+dim(dge)
+```
+We now have 50,246 genes.
+
+
+Only some of the ages are binned.  Bin the rest of the data.
+GTEx has their ages binned so we will treat Allen the same way.
+```{r}
+table(dge$samples$age)
+```
+
+
+```{r}
+donor_ages <- dge$samples$age
+bin_ages <- vector()
+
+for (i in 1:length(donor_ages)){
+  x <- donor_ages[i]
+  if (x == "77" | 
+      x == "78" | 
+      x == "79") {
+        bin_ages <- c(bin_ages, "75_79")
+  }
+  else if (x == "81" | 
+      x == "82" | 
+      x == "83" | 
+      x == "84") {
+        bin_ages <- c(bin_ages, "80_84")
+  }
+  else if (x == "85" | 
+      x == "86" | 
+      x == "87" | 
+      x == "88" | 
+      x == "89") {
+        bin_ages <- c(bin_ages, "85_89")
+  }
+  else if (x == "85" | 
+      x == "86" | 
+      x == "87" | 
+      x == "88" | 
+      x == "89") {
+        bin_ages <- c(bin_ages, "85_89")
+  }
+  else if (x == "90-94") {
+        bin_ages <- c(bin_ages, "90_94")
+  }
+  else if (x == "95-99") {
+        bin_ages <- c(bin_ages, "95_99")
+  }
+  else {
+    bin_ages <- c(bin_ages, "100_")
+  }
+}
+```
+
+
+```{r}
+head(as.data.frame(cbind(donor_ages,bin_ages)), 10) #check
+```
+
+```{r}
+dge$samples$age <- factor(bin_ages)
+```
+
+Reformat type of sample columns.
+```{r}
+sample_columns <- c(1, 7:24)
+dge$samples[sample_columns] <- 
+  lapply(dge$samples[sample_columns], factor)
+```
+
+-----------------------------FOLR1 TPM HISTOGRAMS---------------------------------
+
+Data is already in TPM (transcripts per million).
+Create histogram of TPM FOLR1 values.
+```{r}
+FOLR1.counts <- as.data.frame(dge$counts["FOLR1",])
+colnames(FOLR1.counts) <- "FOLR1.counts"
+log2.FOLR1.counts <- log2(FOLR1.counts + 0.01)
+colnames(log2.FOLR1.counts) <- "log2.FOLR1.counts"
+```
+
+```{r}
+h1 <- ggplot(FOLR1.counts, aes(x = FOLR1.counts)) + 
+  geom_histogram(bins = 100, fill = "gray", color = "black") + 
+  labs(title = "A.", x=NULL, y=NULL) +
+  xlab("FOLR1 TPM") + ylab("# of Samples") + 
+  geom_vline(xintercept = 20, col = "red") +
+  theme_bw()
+
+h2 <- ggplot(FOLR1.counts, aes(x = FOLR1.counts)) + 
+  geom_histogram(bins = 100, fill = "gray", color = "black") + 
+  labs(title = "B.", x=NULL, y=NULL) +
+  xlab("FOLR1 TPM") + ylab("# of Samples") +
+  xlim(0, 50) + geom_vline(xintercept = 20, col = "red") + 
+  theme_bw() 
+
+h3 <- ggplot(log2.FOLR1.counts, aes(x = log2.FOLR1.counts)) + 
+  geom_histogram(bins = 100, fill = "gray", color = "black") + 
+  labs(title = "Allen Brain Atlas\nHippocampus (n = 94)", 
+       x=NULL, y=NULL) +
+  labs(x = expression(log[2](italic(FOLR1))), y = "# of samples") +
+  theme_bw() +
+    theme(plot.title = element_text(size=12)) +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12)) +
+  geom_vline(xintercept = log2(1) + 1, col = "blue") +
+  geom_vline(xintercept = log2(1) - 1, col = "blue") +
+  scale_y_continuous(breaks = c(1:9), limits = c(0,9)) + 
+  scale_x_continuous(breaks = seq(-8,8, by = 2), limits = c(-7,7))
+```
+
+
+```{r}
+h3
+```
+
+
+Arrange graphs in grid.
+```{r}
+plots1 <- list(h1,h2,h3)
+
+layout1 <- rbind(c(1,2),c(3))
+
+grid1 <- grid.arrange(grobs = plots1, layout_matrix = layout1)
+```
+
+------------------------------ASSIGN DIRTY/CLEAN/NEITHER------------------------
+
+Lets looks at groups +/- 1 of the cutoff
+```{r}
+cutoff <- log2(1)
+clean_threshold <- cutoff - 1 # values <= this are clean
+clean_threshold
+cutoff 
+dirty_threshold <- cutoff + 1 # values >= this are dirty
+dirty_threshold
+```
+
+Assign clean or dirty
+```{r}
+clean_or_dirty <- vector()
+vector.log2.FOLR1.counts <- as.vector(log2.FOLR1.counts$log2.FOLR1.counts)
+
+for (i in 1:length(vector.log2.FOLR1.counts)){
+  if (vector.log2.FOLR1.counts[i] <= clean_threshold){
+    clean_or_dirty <- c(clean_or_dirty, "clean")
+  }
+  else if (vector.log2.FOLR1.counts[i] >= dirty_threshold){
+    clean_or_dirty <- c(clean_or_dirty, "dirty")
+  }
+  else {
+    clean_or_dirty <- c(clean_or_dirty, "neither")
+  }
+}
+table(clean_or_dirty)
+```
+
+
+```{r}
+dge$samples$group <- factor(clean_or_dirty)
+dge$samples[1:3,1:5]
+```
+
+```{r}
+h4 <- h3 + 
+  annotate("rect", 
+              xmin = -Inf,
+              xmax = clean_threshold, 
+              ymin = 0, 
+              ymax=Inf, 
+              alpha=0.2, 
+              fill="deepskyblue") +
+  annotate("rect", 
+              xmin = dirty_threshold,
+              xmax = Inf, 
+              ymin = 0, 
+              ymax=Inf, 
+              alpha=0.2, 
+              fill="chocolate4")
+h4
+```
+
+Save graph
+```{r, message=FALSE}
+setwd("~/TTR/02_AllenBrainAtlas//")
+pdf("Allen_FOLR1_histogram.pdf", width = 4, height = 4)
+h4
+```
+
+
+-----------------------FILTER LOWLY EXPRESSED GENES-----------------------------
+
+TPM to CPM
+```{r}
+cpm <- cpm(dge)
+```
+
+Filter
+```{r}
+# produces a logical matrix
+thresh <- cpm > 2 # cpm greater than 2
+
+# keep genes that have at least 3 TRUES in each row of thresh
+keep <- rowSums(thresh) >= 3
+summary(keep)
+
+# redefine object, filter by logical
+dge.filtered <- dge[keep,, keep.lib.sizes = FALSE]
+
+dim(dge)
+dim(dge.filtered)
+```
+Went from 50,283 genes to 21,649 genes.
+
+--------------------------TRIMMED MEAN OF M-VALUES------------------------------
+
+Now, we want to normalize gene expression distributions. We do this by normalizing 
+library size differences in each sample. The method Trimmed Mean of M-values (TMM) 
+is used with the calcNormFactors in the edgeR package. The normalization factors 
+calculated here are used as a scaling factor for the library size.
+  
+Trimmed mean of M values (TMM) normalization estimates sequencing
+depth after excluding genes for which the ratio of counts between a pair
+of experiments is too extreme or for which the average expression is too
+extreme. The edgeR software implements a TMM normalization (Biostar Handbook 2020).
+
+```{r}
+# creates another large DGEList 
+dge.filtered.norm <- calcNormFactors(dge.filtered, method = "TMM")
+
+# view norm factors
+dge.filtered.norm$samples$norm.factors
+summary(dge.filtered.norm$samples$norm.factors)
+```
+Looking to be around ~1.
+
+-------------------------------Variance Partition-------------------------------
+
+See what options we have to choose from.
+```{r}
+colnames(dge.filtered.norm$samples)
+```
+
+
+Specify variables to consider
+```{r, message=FALSE}
+register(SnowParam(4)) # work in parallel
+
+# geneExpr: matrix of gene expression values
+# info: information/metadata about each sample
+geneExpr <- as.matrix(dge.filtered.norm$counts)
+info <- as.data.frame(dge.filtered.norm$samples)
+
+# Age is USUALLY continuous so model it as a fixed effect "age"
+# However, this metadata categorizes it into bins
+# Sex is categorical, so model them as random effects "(1|sex)"
+# Note the syntax
+form <- ~ (1|group) + 
+  (1|age) + 
+  (1|sex)
+
+varPart <- fitExtractVarPartModel(geneExpr, form, info)
+vp <- sortCols(varPart)
+```
+
+Violin plots
+```{r}
+setwd("~/TTR/02_AllenBrainAtlas//")
+
+pdf("Figures/Allen_variance_partition.pdf", width = 6, height = 4)
+vp.graph <- plotVarPart(vp)
+vp.graph
+```
+
+```{r}
+vp.graph
+```
+
+Percent bars
+```{r}
+plotPercentBars(vp[1:10,])
+```
+
+```{r}
+# sort genes based on variance explained by group
+varPart.df <- as.data.frame(varPart)
+order.varPart.df <- varPart.df[order(varPart.df$group, decreasing = TRUE),]
+head(order.varPart.df["group"])
+
+```
+
+
+-----------------------------DESIGN MATRIX--------------------------------------
+
+```{r}
+sex <- dge.filtered.norm$samples$sex
+age <- dge.filtered.norm$samples$age
+```
+
+
+Create a design matrix and specify the samples we want to compare to each other.
+```{r}
+# interaction computes a factor which represents the interaction of the given factors
+group <- interaction(dge.filtered$samples$group)
+
+design <- model.matrix(~ 0 + group + sex + age)
+colnames(design)[1:2] <- c("clean","dirty")
+```
+
+Run voom with quality weights. This combines observational-level weights with
+  sample-specific quality weights in an experiment.
+Normalizes expression intensities so that the log-ratios have similar distributions
+  across a set of samples.
+To quantile normalize, add normalize.method = "quantile".
+
+Quality weights in RNA-seq data improves data quality when samples with high
+  variance are present.  This variation is modeled by taking into account
+  global intensity-dependent trends using voom.  
+Sample-specific variability is taken into account with a log-linear model that 
+  shares parameters between genes.
+https://doi.org/10.1093/nar/gkv412
+
+
+```{r}
+v <- voomWithQualityWeights(dge.filtered.norm, design, plot = TRUE)
+```
+
+---------------------------------MDS PLOT---------------------------------------
+
+```{r}
+#pdf("Figures/Allen_FOLR1_MDS_voom.pdf", width = 4, height = 4)
+
+# blue is clean, brown is dirty
+group_colors <- c("deepskyblue","chocolate4","gray")[v$targets$group] 
+point_shapes <- as.character(v$targets$sex) # will say F or M for points
+# Check everything matches
+head(data.frame(v$targets$group, group_colors, v$targets$sex,point_shapes)) 
+
+mds <- plotMDS(
+  v, # our data object
+  top = 10, # only looking at top 10 genes
+  pch = point_shapes,
+  cex = 1, # point size
+  dim.plot = c(6,7), # specifying principal components to be plotted
+  plot = TRUE, # if TRUE then plot is created on current graphics device
+  col = group_colors
+)
+
+legend(
+  "topleft",
+  pch = 16,
+  legend = unique(factor(v$targets$group)),
+  col = group_colors,
+  cex = 0.8
+)
+
+title("Raw Data: Top 10 Genes")
+```
+
+
+
+---------------------------------LINEAR MODELS----------------------------------
+
+Fit linear models for comparisons of interest.
+Linear modeling in limma is carried out using the lmFit and contrasts.fit
+  functions.
+  
+What do lm.fit and contrasts.fit do?
+  1) Fit a separate model to the expression values for each gene.
+  2) An empirical Bayes moderation is carried out by borrowing info across all
+     the gene to obtain more precise estimates of gene-wise variability.
+  3) The model's residual variances are plotted against average expression 
+     values in the next figure.
+
+It can be seen from this plot that the variance is no longer dependent on the 
+  mean expression level.
+  
+```{r}
+# Fits linear model for each gene given a series of arrays
+fit <- lmFit(
+  v,  # object containing log-expression values for a series of arrays
+  design  # design matrix
+  )
+
+```
+
+Contrast design for differential expression.
+```{r}
+contrasts <-
+  makeContrasts(
+    dirty_vs_clean = dirty - clean,
+    levels = colnames(design)
+  )
+
+head(contrasts)
+```
+
+Assign allComparisons to a vector for later use.
+```{r}
+allComparisons <- colnames(contrasts)
+allComparisons # check
+```
+
+Run contrast analysis.
+Given a linear model fit, compute estimated coefficients and standard errors
+  for a given set of contrasts.
+```{r}
+vfit <- contrasts.fit(fit, contrasts = contrasts)
+```
+
+Compute differential expression based on the empirical Bayes moderation of the
+  standard errors towards a common value.
+```{r}
+veBayesFit <- eBayes(vfit)
+plotSA(veBayesFit, main = "Final Model: Mean-variance Trend")
+```
+
+
+Looking at N of differentially expressed genes (DEGs) with adjusted p < 0.01 
+  and log2FC > 2.
+
+decideTests() identifies which genes are significantly differentially expressed
+  for each contrast from a fit object containing p-values and test statistics.
+```{r}
+sumTable <- 
+  summary(decideTests(
+    vfit,  # object
+    # by default the method = "separate"
+    adjust.method = "BH", 
+    adj.P.Val = 0.05,
+    lfc = 1  # numeric, minimum absolute log2-fold change required
+  ))
+
+head(sumTable)
+```
+
+
+--------------------------------------DEG TABLES--------------------------------
+
+For each comparison...extract table of the top-ranked genes (DEGs) from a linear 
+model fit AND output a table.
+  
+NOTE: Log2FC of 1 is equivalent to linear fold change of 2.
+
+
+```{r}
+setwd("~/TTR/02_AllenBrainAtlas//")
+
+coef <- 1
+for (i in allComparisons) {
+  
+  # p < 1, log2fc > 0 ----------------------------------------------------------
+  vTopTableAll <-
+    topTable(
+      veBayesFit, 
+      coef = coef,  
+      n = Inf, 
+      p.value = 1,
+      lfc = 0 
+    )
+  #output as txt file
+  path <- paste("DEGs/Allen_DEGs_FOLR1_", i, "_FDRq1_Log2FC0.txt", sep = "") 
+  write.table(
+    vTopTableAll,
+    path,
+    sep = "\t",
+    row.names = FALSE,
+    quote = FALSE
+  )
+
+  # p < 0.05, log2fc > 1 -------------------------------------------------------
+  vTopTable2 <-
+    topTable( 
+      veBayesFit,  
+      coef = coef,  
+      n = Inf, 
+      p.value = 0.05,
+      lfc = 1
+    )
+  path <- paste("DEGs/Allen_DEGs_FOLR1_", i, "_FDRq0.05_Log2FC1.txt", sep = "") 
+  write.table(
+    vTopTable2,
+    path,
+    sep = "\t",
+    row.names = FALSE,
+    quote = FALSE
+  )
+  
+  # increment the coefficient --------------------------------------------------
+  coef <- coef + 1
+}
+```
+
+----------------------------------VOLCANO PLOTS---------------------------------
+
+Using the DEG tables we made, graph a volcano plot.
+Read in file.
+```{r}
+setwd("~/TTR/02_AllenBrainAtlas//")
+
+dirty_vs_clean <-
+  read.table(
+    "DEGs/Allen_DEGs_FOLR1_dirty_vs_clean_FDRq1_Log2FC0.txt",
+    header = TRUE,
+    sep = "\t",
+    stringsAsFactors = F
+  )
+```
+
+
+```{r}
+color_values <- vector()
+max <- nrow(dirty_vs_clean)
+
+for(i in 1:max){
+  if (dirty_vs_clean$adj.P.Val[i] < 0.05){
+    if (dirty_vs_clean$logFC[i] > 1){
+      color_values <- c(color_values, 1) # 1 when logFC > 1, pval < 0.05
+    }
+    else if (dirty_vs_clean$logFC[i] < -1){
+      color_values <- c(color_values, 2) # 2 when logFC < -1, pval < 0.05
+    }
+    else{
+      color_values <- c(color_values, 3) # 3 when logFC [-1,1], pval < 0.05
+    }
+  }
+  else{
+    color_values <- c(color_values, 3) # 3 when pval >= 0.05
+  }
+}
+
+dirty_vs_clean$color_p0.05_lfc1 <- factor(color_values)
+```
+
+```{r}
+hadjpval <- (-log10(max(dirty_vs_clean$adj.P.Val[dirty_vs_clean$adj.P.Val 
+                                                 < 0.05], na.rm=TRUE)))
+hadjpval
+```
+
+```{r, message=FALSE}
+p <-
+  ggplot(data = dirty_vs_clean, 
+         aes(x = logFC, # x-axis is logFC
+             y = -log10(adj.P.Val), # y-axis will be log10 of adj.P.Val
+             color = color_p0.05_lfc1)) + # color is based on factored Color column
+  geom_point(alpha = 0.8, size = 3) + # create scatterplot, alpha makes points transparent
+  theme_bw() +
+  theme(legend.position = "none") + # no legend
+  xlim(c(-2, 6)) + ylim(c(0, 25)) + # x and y axis limits
+  scale_color_manual(values = c("red", "blue", "grey")) + # set factor colors
+  labs(
+    title = "", # no main title
+    x = expression(log[2](FC)), # x-axis title
+    y = expression(-log[10] ~ "(FDR adjusted " ~ italic("p") ~ "-value)") # y-axis title
+  ) +
+  scale_x_continuous(n.breaks = 6, limits = c(-3,7)) +
+  scale_y_continuous(breaks = seq(0, 50, by = 10), limits = c(0,50)) +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12)) +
+  geom_hline(yintercept = hadjpval,
+                     colour = "#000000",
+                     linetype = "dashed") +
+    geom_vline(xintercept = 1,
+             colour = "#000000",
+             linetype = "dashed") +
+  geom_vline(xintercept = -1,
+             colour = "#000000",
+             linetype = "dashed") +
+  ggtitle("Allen Brain Atlas\nFDRq < 0.05, -1 > LogFC > 1") +
+  geom_text_repel(data = subset(dirty_vs_clean, 
+                                dirty_vs_clean$color_p0.05_lfc1 == 1),
+                  aes(x = logFC, y= -log10(adj.P.Val), label = gene_symbol), 
+                  color = "maroon",
+                  fontface="italic",
+                  max.overlaps = getOption("ggrepel.max.overlaps", 
+                                           default = 55)) +
+  geom_text_repel(data = subset(dirty_vs_clean,
+                                dirty_vs_clean$color_p0.05_lfc1 == 2),
+                  aes(x = logFC, y= -log10(adj.P.Val), label = gene_symbol),
+                  color = "navyblue",
+                  fontface="italic",
+                  max.overlaps = getOption("ggrepel.max.overlaps",
+                                           default = 30))
+p
+```
+
+```{r}
+setwd("~/TTR/02_AllenBrainAtlas//")
+pdf("Figures/Allen_TTR_volcano.pdf", width = 4, height = 4)
+p
+```
+
