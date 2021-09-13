@@ -7,8 +7,8 @@ pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "/Users/m214960/Documents/Allen_Brain_Atlas")
-setwd("/Users/m239830/Dropbox (ASU)/Fryer_Lab/TTR-V2-SUBMISSION/Allen_Brain_Atlas")
+knitr::opts_knit$set(root.dir = "~/TTR/02_AllenBrainAtlas/")
+setwd("~/TTR/02_AllenBrainAtlas/")
 ```
 
 Load necessary packages.
@@ -30,7 +30,7 @@ library(variancePartition)
 
 Read in files.
 ```{r}
-setwd("/Users/m239830/Dropbox (ASU)/Fryer_Lab/TTR-V2-SUBMISSION/Allen_Brain_Atlas")
+setwd("~/TTR/02_AllenBrainAtlas/")
 
 # counts already in TPM
 counts <- read.delim("Files/hippocampus_tpm_counts.txt", 
@@ -272,7 +272,7 @@ h4
 
 Save graph
 ```{r, message=FALSE}
-setwd("/Users/m239830/Dropbox (ASU)/Fryer_Lab/TTR-V2-SUBMISSION/Allen_Brain_Atlas/")
+setwd("~/TTR/02_AllenBrainAtlas//")
 pdf("Allen_TTR_female_histogram.pdf", width = 4, height = 4)
 h4
 ```
@@ -477,7 +477,7 @@ NOTE: Log2FC of 1 is equivalent to linear fold change of 2.
 
 
 ```{r}
-setwd("/Users/m239830/Dropbox (ASU)/Fryer_Lab/TTR-V2-SUBMISSION/Allen_Brain_Atlas/")
+setwd("~/TTR/02_AllenBrainAtlas//")
 coef <- 1
 for (i in allComparisons) {
   
@@ -528,7 +528,7 @@ for (i in allComparisons) {
 Using the DEG tables we made, graph a volcano plot.
 Read in file.
 ```{r}
-setwd("/Users/m239830/Dropbox (ASU)/Fryer_Lab/TTR-V2-SUBMISSION/Allen_Brain_Atlas/")
+setwd("~/TTR/02_AllenBrainAtlas//")
 dirty_vs_clean <-
   read.table(
     "DEGs/Allen_DEGs_TTR_female_dirty_vs_clean_FDRq1_Log2FC0.txt",
@@ -620,7 +620,7 @@ p
 ```
 
 ```{r}
-setwd("/Users/m239830/Dropbox (ASU)/Fryer_Lab/TTR-V2-SUBMISSION/Allen_Brain_Atlas/")
+setwd("~/TTR/02_AllenBrainAtlas//")
 pdf("Figures/Allen_TTR_female_volcano.pdf", width = 4, height = 4)
 p
 dev.off()

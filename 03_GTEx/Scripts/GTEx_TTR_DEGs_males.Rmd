@@ -8,7 +8,9 @@ output:
 ---
 
 ```{r setwd, include=FALSE}
-knitr::opts_knit$set(root.dir = "/Users/m214960/Documents/GTEx")
+knitr::opts_knit$set(root.dir = "~/TTR/03_GTEx/")
+setwd("~/TTR/03_GTEx/")
+
 ```
 
 Load packages.
@@ -28,6 +30,8 @@ library(variancePartition)
 
 Read in files.
 ```{r}
+setwd("~/TTR/03_GTEx/")
+
 # read in counts
 counts <- read.delim("Files/Brain_Hippocampus", 
                      header = TRUE, 
@@ -167,11 +171,18 @@ h2 <- ggplot(ttr.counts, aes(x = ttr.counts)) +
 
 h3 <- ggplot(log2.ttr.counts, aes(x = log2.ttr.counts)) + 
   geom_histogram(bins = 100, fill = "gray", color = "black") + 
-  labs(title = "GTEx\nMale Hippocampus (n = 143)", x=NULL, y=NULL) +
-  xlab("log2(TTR TPM)") + ylab("# of Samples") +
+  labs(title = "GTEx\nMale hippocampus (n = 143)", x=NULL, y=NULL) +
+  labs(x = expression(log[2](italic(TTR))), y = "# of samples") +
   theme_bw() +
+  theme(plot.title = element_text(size=12)) +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12)) +
   geom_vline(xintercept = log2(20) + 1, col = "blue") +
-  geom_vline(xintercept = log2(20) - 1, col = "blue")
+  geom_vline(xintercept = log2(20) - 1, col = "blue") +
+  scale_y_continuous(breaks = c(1:9), limits = c(0,9)) + 
+  scale_x_continuous(breaks = seq(-2,12, by = 2), limits = c(-4,13))
 ```
 
 Arrange graphs in grid.
@@ -256,7 +267,8 @@ h5
 ```
 
 ```{r}
-setwd("/Users/m214960/Documents/GTEx")
+setwd("~/TTR/03_GTEx/")
+
 pdf(
   "Figures/GTEx_TTR_males_histogram.pdf",
   width = 4, height = 4)
@@ -461,6 +473,8 @@ model fit AND output a table.
 NOTE: Log2FC of 1 is equivalent to linear fold change of 2.
 
 ```{r}
+setwd("~/TTR/03_GTEx/")
+
 coef = 1
 for (i in allComparisons) {
   
@@ -479,7 +493,7 @@ for (i in allComparisons) {
     vTopTableAll,
     path,
     sep = "\t",
-    row.names = TRUE,
+    row.names = FALSE,
     quote = FALSE
   )
   
@@ -497,7 +511,7 @@ for (i in allComparisons) {
     vTopTable1,
     path,
     sep = "\t",
-    row.names = TRUE,
+    row.names = FALSE,
     quote = FALSE
   )
 
@@ -512,6 +526,8 @@ for (i in allComparisons) {
 Using the DEG tables we made, graph a volcano plot.
 Read in file.
 ```{r}
+setwd("~/TTR/03_GTEx/")
+
 dirty_vs_clean <-
   read.table(
     "DEGs/DEGs_TTR_males_dirty_vs_clean_FDRq1_Log2FC0.txt",
@@ -519,20 +535,6 @@ dirty_vs_clean <-
     sep = "\t",
     stringsAsFactors = F
   )
-```
-
-```{r}
-dirty_vs_clean$gene_symbol <- rownames(dirty_vs_clean)
-```
-
-
-```{r}
-summary(decideTests(
-    vfit,  # object
-    adjust.method = "BH", # by default the method = "separate"
-    p.value = 0.05,
-    lfc = 1
-  ))
 ```
 
 ```{r}
@@ -579,6 +581,8 @@ p <-
     x = expression(log[2](FC)), # x-axis title
     y = expression(-log[10] ~ "(FDR adjusted " ~ italic("p") ~ "-value)") # y-axis title
   ) +
+  scale_x_continuous(n.breaks = 6, limits = c(-3,7)) +
+  scale_y_continuous(breaks = seq(0, 35, by = 10), limits = c(0,35)) +
   theme(plot.title = element_text(size=12)) +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(size = 12)) +
@@ -593,7 +597,7 @@ p <-
   geom_vline(xintercept = -1,
              colour = "#000000",
              linetype = "dashed") +
-  ggtitle("GTEx Male TTR Groups\nFDRq < 0.05, -1 > LogFC > 1") +
+  ggtitle("GTEx\nMale hippocampus\nFDRq < 0.05, -1 > LogFC > 1") +
   geom_text_repel(data = subset(dirty_vs_clean, 
                                 dirty_vs_clean$color_p0.05_lfc1 == 1),
                   aes(x = logFC, y= -log10(adj.P.Val), label = gene_name), 
@@ -612,7 +616,7 @@ p
 ```
 
 ```{r}
-setwd("/Users/m214960/Documents/GTEx")
+setwd("~/TTR/03_GTEx/")
 pdf("Figures/GTEx_TTR_males_volcano.pdf", width = 4, height = 4)
 p
 ```

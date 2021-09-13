@@ -8,7 +8,9 @@ output:
 ---
 
 ```{r setwd, include=FALSE}
-knitr::opts_knit$set(root.dir = "/Users/m214960/Documents/GTEx")
+knitr::opts_knit$set(root.dir = "~/TTR/03_GTEx/")
+setwd("~/TTR/03_GTEx/")
+
 ```
 
 Load packages.
@@ -28,6 +30,8 @@ library(variancePartition)
 
 Read in files.
 ```{r read_files}
+setwd("~/TTR/03_GTEx/")
+
 # read in counts
 counts <- read.delim("Files/Brain_Hippocampus", 
                      header = TRUE, 
@@ -159,11 +163,18 @@ h2 <- ggplot(folr1.counts, aes(x = folr1.counts)) +
 
 h3 <- ggplot(log2.folr1.counts, aes(x = log2.folr1.counts)) + 
   geom_histogram(bins = 100, fill = "gray", color = "black") + 
-  labs(title = "GTEx\nHippocampus", x=NULL, y=NULL) +
-  xlab("log2(FOLR1 TPM)") + ylab("# of Samples") +
+  labs(title = "GTEx\nHippocampus (n = 197)") +
+  labs(x = expression(log[2](italic(FOLR1))), y = "# of samples") +
   theme_bw() +
+  theme(plot.title = element_text(size=12)) +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12)) +
   geom_vline(xintercept = log2(1) + 1, col = "blue") +
-  geom_vline(xintercept = log2(1) - 1, col = "blue")
+  geom_vline(xintercept = log2(1) - 1, col = "blue") +
+  scale_y_continuous(breaks = c(1:9), limits = c(0,9)) +
+  scale_x_continuous(breaks = seq(-8,8, by = 2), limits = c(-7,7))
 ```
 
 Arrange graphs in grid.
@@ -248,7 +259,8 @@ h5
 ```
 
 ```{r}
-setwd("/Users/m214960/Documents/GTEx")
+setwd("~/TTR/03_GTEx/")
+
 pdf(
   "Figures/GTEx_FOLR1_histogram.pdf",
   width = 4, height = 4)
@@ -315,7 +327,7 @@ group <- interaction(dge.filtered$samples$group)
 
 design <- model.matrix(~ 0 + 
                          group + 
-                         sex + # remove if subset by sex
+                         sex + 
                          age)
 colnames(design) <- make.names(colnames(design))
 colnames(design)[1:2] <- c("clean","dirty")
@@ -456,6 +468,8 @@ model fit AND output a table.
 NOTE: Log2FC of 1 is equivalent to linear fold change of 2.
 
 ```{r}
+setwd("~/TTR/03_GTEx/")
+
 coef = 1
 for (i in allComparisons) {
   
@@ -474,7 +488,7 @@ for (i in allComparisons) {
     vTopTableAll,
     path,
     sep = "\t",
-    row.names = TRUE,
+    row.names = FALSE,
     quote = FALSE
   )
   
@@ -492,7 +506,7 @@ for (i in allComparisons) {
     vTopTable1,
     path,
     sep = "\t",
-    row.names = TRUE,
+    row.names = FALSE,
     quote = FALSE
   )
 
@@ -507,6 +521,8 @@ for (i in allComparisons) {
 Using the DEG tables we made, graph a volcano plot.
 Read in file.
 ```{r}
+setwd("~/TTR/03_GTEx/")
+
 dirty_vs_clean <-
   read.table(
     "DEGs/DEGs_FOLR1_dirty_vs_clean_FDRq1_Log2FC0.txt",
@@ -575,6 +591,8 @@ p <-
     x = expression(log[2](FC)), # x-axis title
     y = expression(-log[10] ~ "(FDR adjusted " ~ italic("p") ~ "-value)") # y-axis title
   ) +
+  scale_x_continuous(n.breaks = 6, limits = c(-3,7)) +
+  scale_y_continuous(breaks = seq(0, 50, by = 10), limits = c(0,50)) +
   theme(plot.title = element_text(size=12)) +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(size = 12)) +
@@ -589,26 +607,35 @@ p <-
   geom_vline(xintercept = -1,
              colour = "#000000",
              linetype = "dashed") +
-  ggtitle("GTEx FOLR1 Groups\nFDRq < 0.05, -1 > LogFC > 1") +
+  ggtitle("GTEx\nFDRq < 0.05, -1 > LogFC > 1") +
   geom_text_repel(data = subset(dirty_vs_clean, 
                                 dirty_vs_clean$color_p0.05_lfc1 == 1),
                   aes(x = logFC, y= -log10(adj.P.Val), label = gene_name), 
                   color = "maroon",
                   fontface="italic",
                   max.overlaps = getOption("ggrepel.max.overlaps", 
-                                           default = 15)) +
+                                           default = 25)) +
+    geom_text_repel(data = subset(dirty_vs_clean, 
+                                dirty_vs_clean$gene_name == "TTR"),
+                  aes(x = logFC, y= -log10(adj.P.Val), label = gene_name), 
+                  color = "maroon",
+                  fontface="italic",
+                  max.overlaps = getOption("ggrepel.max.overlaps", 
+                                           default = 25)) +
   geom_text_repel(data = subset(dirty_vs_clean,
                                 dirty_vs_clean$color_p0.05_lfc1 == 2),
                   aes(x = logFC, y= -log10(adj.P.Val), label = gene_name),
                   color = "navyblue",
                   fontface="italic",
                   max.overlaps = getOption("ggrepel.max.overlaps",
-                                           default = 15))
+                                           default = 25))
 p
 ```
 
 ```{r}
-setwd("/Users/m214960/Documents/GTEx")
-pdf("Figures/GTEx_FOLR1_volcano.pdf", width = 4, height = 4)
+setwd("~/TTR/03_GTEx/")
+
+pdf("~/TTR/03_GTEx//Figures/GTEx_FOLR1_volcano.pdf", width = 4, height = 4)
 p
+dev.off()
 ```

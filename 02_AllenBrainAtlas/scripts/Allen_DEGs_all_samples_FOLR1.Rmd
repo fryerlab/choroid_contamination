@@ -7,8 +7,8 @@ pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "~/TTR/02_AllenBrainAtlas//")
-setwd("~/TTR/02_AllenBrainAtlas//")
+knitr::opts_knit$set(root.dir = "~/TTR/02_AllenBrainAtlas/")
+setwd("~/TTR/02_AllenBrainAtlas/")
 ```
 
 Load necessary packages.
@@ -29,16 +29,16 @@ library(variancePartition)
 
 Read in files.
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 
 # counts already in TPM
-counts <- read.delim("~/TTR/02_AllenBrainAtlas//Files/hippocampus_tpm_counts.txt", 
+counts <- read.delim("~/TTR/02_AllenBrainAtlas/Files/hippocampus_tpm_counts.txt", 
                      header = TRUE, 
                      sep = "\t")
-gene.info <- read.delim("~/TTR/02_AllenBrainAtlas//Files/geneInfo.txt", 
+gene.info <- read.delim("~/TTR/02_AllenBrainAtlas/Files/geneInfo.txt", 
                         header = TRUE, 
                         sep = "\t")
-metadata <- read.delim("~/TTR/02_AllenBrainAtlas//Files/hippocampus_metadata.txt", 
+metadata <- read.delim("~/TTR/02_AllenBrainAtlas/Files/hippocampus_metadata.txt", 
                        header = TRUE, 
                        sep = "\t")
 ```
@@ -263,7 +263,7 @@ h4
 
 Save graph
 ```{r, message=FALSE}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 pdf("Allen_FOLR1_histogram.pdf", width = 4, height = 4)
 h4
 ```
@@ -346,7 +346,7 @@ vp <- sortCols(varPart)
 
 Violin plots
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 
 pdf("Figures/Allen_variance_partition.pdf", width = 6, height = 4)
 vp.graph <- plotVarPart(vp)
@@ -525,7 +525,7 @@ NOTE: Log2FC of 1 is equivalent to linear fold change of 2.
 
 
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 
 coef <- 1
 for (i in allComparisons) {
@@ -577,7 +577,7 @@ for (i in allComparisons) {
 Using the DEG tables we made, graph a volcano plot.
 Read in file.
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 
 dirty_vs_clean <-
   read.table(
@@ -669,7 +669,7 @@ p
 ```
 
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 pdf("Figures/Allen_TTR_volcano.pdf", width = 4, height = 4)
 p
 ```

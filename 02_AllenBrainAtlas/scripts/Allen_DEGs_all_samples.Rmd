@@ -7,8 +7,8 @@ pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "~/TTR/02_AllenBrainAtlas//")
-setwd("~/TTR/02_AllenBrainAtlas//")
+knitr::opts_knit$set(root.dir = "~/TTR/02_AllenBrainAtlas/")
+setwd("~/TTR/02_AllenBrainAtlas/")
 ```
 
 Load necessary packages.
@@ -31,16 +31,16 @@ library("ggpubr")
 
 Read in files.
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 
 # counts already in TPM
-counts <- read.delim("~/TTR/02_AllenBrainAtlas//Files/hippocampus_tpm_counts.txt", 
+counts <- read.delim("~/TTR/02_AllenBrainAtlas/Files/hippocampus_tpm_counts.txt", 
                      header = TRUE, 
                      sep = "\t")
-gene.info <- read.delim("~/TTR/02_AllenBrainAtlas//Files/geneInfo.txt", 
+gene.info <- read.delim("~/TTR/02_AllenBrainAtlas/Files/geneInfo.txt", 
                         header = TRUE, 
                         sep = "\t")
-metadata <- read.delim("~/TTR/02_AllenBrainAtlas//Files/hippocampus_metadata.txt", 
+metadata <- read.delim("~/TTR/02_AllenBrainAtlas/Files/hippocampus_metadata.txt", 
                        header = TRUE, 
                        sep = "\t")
 ```
@@ -265,7 +265,7 @@ h4
 
 Save graph
 ```{r, message=FALSE}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 pdf("Allen_TTR_histogram.pdf", width = 4, height = 4)
 h4
 ```
@@ -348,7 +348,7 @@ vp <- sortCols(varPart)
 
 Violin plots
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 
 pdf("Figures/Allen_variance_partition.pdf", width = 6, height = 4)
 vp.graph <- plotVarPart(vp)
@@ -527,7 +527,7 @@ NOTE: Log2FC of 1 is equivalent to linear fold change of 2.
 
 
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 
 coef <- 1
 for (i in allComparisons) {
@@ -579,7 +579,7 @@ for (i in allComparisons) {
 Using the DEG tables we made, graph a volcano plot.
 Read in file.
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 
 dirty_vs_clean <-
   read.table(
@@ -671,7 +671,7 @@ p
 ```
 
 ```{r}
-setwd("~/TTR/02_AllenBrainAtlas//")
+setwd("~/TTR/02_AllenBrainAtlas/")
 pdf("Figures/Allen_TTR_volcano.pdf", width = 4, height = 4)
 p
 ```
@@ -711,7 +711,7 @@ age_violin <- ggplot(df, aes(x=bin_age, y=log2(value))) +
         axis.text.y = element_text(size = 12))
 
 setwd("~/TTR/02_AllenBrainAtlas/")
-pdf("Figures/age_violin.pdf", width = 6, height = 4)
+pdf("Figures/Allen_age_violin.pdf", width = 6, height = 4)
 age_violin
 
 cor(as.numeric(df$bin_age), log2(df$value),  method = "pearson")

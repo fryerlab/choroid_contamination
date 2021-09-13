@@ -8,11 +8,13 @@ output:
 ---
 
 ```{r setwd, include=FALSE}
-knitr::opts_knit$set(root.dir = "/Users/m214960/Documents/GTEx")
+knitr::opts_knit$set(root.dir = "~/TTR/03_GTEx/")
+setwd("~/TTR/03_GTEx/")
+
 ```
 
 Load packages.
-```{r packages, results='hide'}
+```{r packages, message=FALSE}
 library(BiocParallel)
 library(dplyr)
 library(edgeR)
@@ -24,10 +26,14 @@ library(gridExtra)
 library(knitr)
 library(stringr)
 library(variancePartition)
+library(reshape2)
+library(ggpubr)
 ```
 
 Read in files.
-```{r}
+```{r read_files}
+setwd("~/TTR/03_GTEx/")
+
 # read in counts
 counts <- read.delim("Files/Brain_Hippocampus", 
                      header = TRUE, 
@@ -105,7 +111,7 @@ table(gtf.genes$gene_type[duplicated(gtf.genes$gene_name)])
 Remove duplicated gene names which are mainly non-coding RNAs.
 ```{r}
 removeDuplicated <- !duplicated(gtf.genes$gene_name)  # true when not duplicated
-dge <- dge[removeDuplicated,,keep.lib.sizes=FALSE]
+dge <- dge[removeDuplicated,,keep.lib.sizes = FALSE]
 dim(dge)
 ```
 
@@ -160,11 +166,19 @@ h2 <- ggplot(ttr.counts, aes(x = ttr.counts)) +
 
 h3 <- ggplot(log2.ttr.counts, aes(x = log2.ttr.counts)) + 
   geom_histogram(bins = 100, fill = "gray", color = "black") + 
-  labs(title = "GTEx\nHippocampus", x=NULL, y=NULL) +
-  xlab("log2(TTR TPM)") + ylab("# of Samples") +
+  labs(title = "GTEx\nHippocampus (n = 197)", x=NULL, y=NULL) +
+  labs(x = expression(log[2](italic(TTR))), y = "# of samples") +
   theme_bw() +
+  theme(plot.title = element_text(size=12)) +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12)) +
   geom_vline(xintercept = log2(20) + 1, col = "blue") +
-  geom_vline(xintercept = log2(20) - 1, col = "blue")
+  geom_vline(xintercept = log2(20) - 1, col = "blue") +
+  scale_y_continuous(breaks = c(1:9), limits = c(0,9)) + 
+  scale_x_continuous(breaks = seq(-2,12, by = 2), limits = c(-4,13))
+h3
 ```
 
 Arrange graphs in grid.
@@ -249,7 +263,8 @@ h5
 ```
 
 ```{r}
-setwd("/Users/m214960/Documents/GTEx")
+setwd("~/TTR/03_GTEx/")
+
 pdf(
   "Figures/GTEx_TTR_histogram.pdf",
   width = 4, height = 4)
@@ -309,46 +324,11 @@ See what options we have to choose from.
 colnames(dge.filtered.norm$samples)
 ```
 
-Specify variables to consider
-```{r}
-register(SnowParam(4)) # work in parallel
 
-# geneExpr: matrix of gene expression values
-# info: information/metadata about each sample
-geneExpr <- as.matrix(dge.filtered.norm$counts)
-info <- as.data.frame(dge.filtered.norm$samples)
-info$hardy_scale <- as.factor(info$hardy_scale)
 
-# Age is USUALLY continuous so model it as a fixed effect "age"
-# However, this metadata categorizes it into bins so it's categorical
-# Sex is categorical, so model them as random effects "(1|sex)"
-# Note the syntax
-form <- ~ (1|group) + 
-  (1|age) + 
-  (1|sex) + 
-  (1|hardy_scale)
 
-varPart <- fitExtractVarPartModel(geneExpr, form, info)
-vp <- sortCols(varPart)
-```
 
-Violin plots
-```{r}
-plotVarPart(vp)
-```
 
-Percent bars
-```{r}
-plotPercentBars(vp[1:10,])
-```
-
-```{r}
-# sort genes based on variance explained by group
-varPart.df <- as.data.frame(varPart)
-order.varPart.df <- varPart.df[order(varPart.df$group, decreasing = TRUE),]
-head(order.varPart.df["group"])
-
-```
 
 -----------------------------DESIGN MATRIX--------------------------------------
 
@@ -385,6 +365,7 @@ https://doi.org/10.1093/nar/gkv412
 
 
 ```{r}
+# takes a while to run
 v <- voomWithQualityWeights(dge.filtered.norm, design, plot = TRUE)
 ```
 
@@ -505,6 +486,8 @@ model fit AND output a table.
 NOTE: Log2FC of 1 is equivalent to linear fold change of 2.
 
 ```{r}
+setwd("~/TTR/03_GTEx/")
+
 coef = 1
 for (i in allComparisons) {
   
@@ -523,7 +506,7 @@ for (i in allComparisons) {
     vTopTableAll,
     path,
     sep = "\t",
-    row.names = TRUE,
+    row.names = FALSE,
     quote = FALSE
   )
   
@@ -541,7 +524,7 @@ for (i in allComparisons) {
     vTopTable1,
     path,
     sep = "\t",
-    row.names = TRUE,
+    row.names = FALSE,
     quote = FALSE
   )
 
@@ -556,6 +539,8 @@ for (i in allComparisons) {
 Using the DEG tables we made, graph a volcano plot.
 Read in file.
 ```{r}
+setwd("~/TTR/03_GTEx/")
+
 dirty_vs_clean <-
   read.table(
     "DEGs/DEGs_TTR_dirty_vs_clean_FDRq1_Log2FC0.txt",
@@ -563,20 +548,6 @@ dirty_vs_clean <-
     sep = "\t",
     stringsAsFactors = F
   )
-```
-
-```{r}
-dirty_vs_clean$gene_symbol <- rownames(dirty_vs_clean)
-```
-
-
-```{r}
-summary(decideTests(
-    vfit,  # object
-    adjust.method = "BH", # by default the method = "separate"
-    p.value = 0.05,
-    lfc = 1
-  ))
 ```
 
 ```{r}
@@ -604,7 +575,9 @@ dirty_vs_clean$color_p0.05_lfc1 <- factor(color_values)
 ```
 
 ```{r}
-hadjpval <- (-log10(max(dirty_vs_clean$adj.P.Val[dirty_vs_clean$adj.P.Val < 0.05], na.rm=TRUE)))
+max <- max(dirty_vs_clean$adj.P.Val[dirty_vs_clean$adj.P.Val < 0.05], 
+           na.rm=TRUE)
+hadjpval <- -log10(max)
 hadjpval
 ```
 
@@ -623,6 +596,8 @@ p <-
     x = expression(log[2](FC)), # x-axis title
     y = expression(-log[10] ~ "(FDR adjusted " ~ italic("p") ~ "-value)") # y-axis title
   ) +
+  scale_x_continuous(n.breaks = 6, limits = c(-3,7)) +
+  scale_y_continuous(breaks = seq(0, 50, by = 10)) +
   theme(plot.title = element_text(size=12)) +
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(size = 12)) +
@@ -651,13 +626,54 @@ p <-
                   color = "navyblue",
                   fontface="italic",
                   max.overlaps = getOption("ggrepel.max.overlaps",
-                                           default = 30))
+                                           default = 20))
 p
 ```
 
 ```{r}
-setwd("/Users/m214960/Documents/GTEx")
+setwd("~/TTR/03_GTEx/")
+
 pdf("Figures/GTEx_TTR_volcano.pdf", width = 4, height = 4)
 p
 ```
+```{r age_violin}
+TTR <- subset(dge.filtered.norm$counts, dge.filtered.norm$genes$gene_name == "TTR")
+TTRmelt <- melt(TTR)
 
+names(TTRmelt)[names(TTRmelt) == "Var2"] <- "subject_id"
+
+df <- merge(TTRmelt, metadata, by = "subject_id")
+df$age <- as.factor(df$age)
+plot(df$age, log2(df$value))
+
+age_violin <- ggplot(df, aes(x=age, y=log2(value))) + 
+  geom_violin() + geom_boxplot(width=0.1, outlier.size = 0) +
+  geom_jitter(shape=16, position=position_jitter(0.2)) +
+  labs(
+  title = "GTEx", # no main title
+  x = ("Age bin"), # x-axis title
+  y = expression(log[2](italic(TTR))) # y-axis title
+) +
+  theme(plot.title = element_text(size=12)) +
+  theme(axis.title.x = element_text(size = 12),
+        axis.text.x = element_text(size = 12)) +
+  theme(axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12))
+
+setwd("~/TTR/03_GTEx/")
+
+pdf("Figures/GTEx_age_violin.pdf", width = 6, height = 4)
+age_violin
+
+cor(as.numeric(df$age), log2(df$value),  method = "pearson")
+
+df$age <- as.numeric(df$age)
+df$value <- log2(df$value)
+ggscatter(df, x = "age", y = "value", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Age bins", ylab = expression(log[2](italic(TTR))))
+
+kruskal.test(df$value~df$age)
+  
+```
