@@ -21,3 +21,6 @@ Also note that you will need to update the working directory of the R scripts pr
 - 2 files will be output.
   - **DEG_dirty_vs_clean_FDRq1_log2FC0.txt** which contains a differentially expressed genes list with the specified cutoffs.
   - **DEG_dirty_vs_clean_FDRq0.05_Log2FC1.txt** whcih contains a differentially expressed genes list with the specified cutoffs. 
+## 3. gencode annotation file
+- gencode.v22.annotation.gtf will need to be downloaded and added to the Files folder
+- https://www.gencodegenes.org/human/release_22.html 
