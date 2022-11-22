@@ -1,0 +1,19 @@
+Sample	Sex	Group	Title	Value	Rank
+GSM542559	Female	old + amyloid	Temporal Cortex_AD_F2	2669	99
+GSM542570	Male	old + amyloid	Temporal Cortex_AD_F1	542.835	95
+GSM542488	Female	old	Temporal Cortex_Old_F5	650.916	95
+GSM542555	Female	old	Temporal Cortex_Old_F6	3122.99	99
+GSM542557	Female	old	Temporal Cortex_Old_F7	6233.84	99
+GSM542571	Female	old	Temporal Cortex_Old_F4	1044.85	97
+GSM542574	Female	old	Temporal Cortex_Old_F1	3490.33	99
+GSM542575	Female	old	Temporal Cortex_Old_F2	290.341	91
+GSM542576	Female	old	Temporal Cortex_Old_F3	19296.8	99
+GSM542560	Male	old	Temporal Cortex_Old_M2	958.201	97
+GSM542561	Male	old	Temporal Cortex_Old_M1	237.603	89
+GSM542573	Male	old	Temporal Cortex_Old_M3	194.334	86
+GSM542556	Female	young	Temporal Cortex_Young A_F1	13819.8	99
+GSM542563	Female	young	Temporal Cortex_Young A_F4	13.8758	21
+GSM542572	Female	young	Temporal Cortex_Young A_F3	13.0558	22
+GSM542577	Female	young	Temporal Cortex_Young A_F2	23832	99
+GSM542558	Male	young	Temporal Cortex_Young A_M2	477.754	95
+GSM542562	Male	young	Temporal Cortex_Young A_M1	78.2421	60

@@ -1,0 +1,77 @@
+Sample	Strain	Tissue	Value	Rank	Title
+GSM15169	Sprague	frontal cortex	73.2	54	frontal cortex Sprague 3932
+GSM15170	Sprague	frontal cortex	15.9	21	frontal cortex Sprague 3933
+GSM15171	Sprague	frontal cortex	56.5	45	frontal cortex Sprague 3934
+GSM15172	Sprague	frontal cortex	85	54	frontal cortex Sprague 3935
+GSM15173	Sprague	frontal cortex	109.8	61	frontal cortex Sprague 3936
+GSM15174	Sprague	frontal cortex	77	54	frontal cortex Sprague 3937
+GSM15179	Sprague	hippocampus	8361.8	99	hippocampus Sprague 3957
+GSM15151	Sprague	cerebral cortex	157	69	cerebral cortex Sprague 3914
+GSM15152	Sprague	cerebral cortex	764.4	92	cerebral cortex Sprague 3915
+GSM15153	Sprague	cerebral cortex	138.5	68	cerebral cortex Sprague 3916
+GSM15154	Sprague	cerebral cortex	132.7	65	cerebral cortex Sprague 3917
+GSM15155	Sprague	cerebral cortex	777.5	92	cerebral cortex Sprague 3918
+GSM15156	Sprague	cerebral cortex	163.1	69	cerebral cortex Sprague 3919
+GSM15183	Sprague	ventral striatum	310	82	ventral striatum Sprague 3961
+GSM15184	Sprague	ventral striatum	95.1	57	ventral striatum Sprague 3962
+GSM15185	Sprague	ventral striatum	8335.2	99	ventral striatum Sprague 3963
+GSM15223	Sprague	dorsal striatum	75.4	43	dorsal striatum Sprague 3978
+GSM15224	Sprague	dorsal striatum	69.6	41	dorsal striatum Sprague 3981
+GSM15221	Sprague	amygdala	147.7	60	amygdala, central nucleus Sprague1
+GSM15138	Sprague	cerebellum	2851.2	98	cerebellum Sprague 3896
+GSM15139	Sprague	cerebellum	3308.4	99	cerebellum Sprague 3897
+GSM15140	Sprague	cerebellum	147	67	cerebellum Sprague 3898
+GSM15141	Sprague	cerebellum	10030.6	99	cerebellum Sprague 3899
+GSM15142	Sprague	cerebellum	385.6	85	cerebellum Sprague 3900
+GSM15143	Sprague	cerebellum	2827.2	98	cerebellum Sprague 3901
+GSM15117	Wistar	frontal cortex	100.5	60	frontal cortex Wistar 3658
+GSM15118	Wistar	frontal cortex	81.2	55	frontal cortex Wistar 3659
+GSM15119	Wistar	frontal cortex	104.7	60	frontal cortex Wistar 3660
+GSM15120	Wistar	frontal cortex	163.9	71	frontal cortex Wistar 3662
+GSM15157	Wistar	frontal cortex	57.5	48	frontal cortex Wistar 3920
+GSM15158	Wistar	frontal cortex	93.6	59	frontal cortex Wistar 3921
+GSM15159	Wistar	frontal cortex	47.7	43	frontal cortex Wistar 3922
+GSM15160	Wistar	frontal cortex	122.7	65	frontal cortex Wistar 3923
+GSM15161	Wistar	frontal cortex	118.7	63	frontal cortex Wistar 3924
+GSM15162	Wistar	frontal cortex	70.1	50	frontal cortex Wistar 3925
+GSM15126	Wistar	hippocampus	10751	99	hippocampus Wistar 3772
+GSM15144	Wistar	cerebral cortex	2331.9	97	cerebral cortex Wistar 3902
+GSM15145	Wistar	cerebral cortex	1032.4	94	cerebral cortex Wistar 3903
+GSM15146	Wistar	cerebral cortex	2763.6	98	cerebral cortex Wistar 3904
+GSM15180	Wistar	ventral striatum	116.9	62	ventral striatum Wistar 3958
+GSM15191	Wistar	ventral striatum	119.2	63	ventral striatum Wistar 4026
+GSM15192	Wistar	ventral striatum	902.9	93	ventral striatum Wistar 4028
+GSM15190	Wistar	dorsal striatum	130.6	66	dorsal striatum Wistar 3966
+GSM15121	Wistar	amygdala	121.8	66	amygdala Wistar 3722
+GSM15122	Wistar	amygdala	1256.8	95	amygdala Wistar 3723
+GSM15123	Wistar	amygdala	240.6	79	amygdala Wistar 3724
+GSM15124	Wistar	amygdala	99	59	amygdala Wistar 3942
+GSM15176	Wistar	amygdala	12131.5	99	amygdala Wistar 3721
+GSM15177	Wistar	amygdala	73.9	50	amygdala Wistar 3720
+GSM15127	Wistar	cerebellum	7487.1	99	cerebellum Wistar 3884
+GSM15128	Wistar	cerebellum	3840.6	99	cerebellum Wistar 3885
+GSM15129	Wistar	cerebellum	6556.8	99	cerebellum Wistar 3886
+GSM15130	Wistar	cerebellum	371.5	84	cerebellum Wistar 3887
+GSM15131	Wistar	cerebellum	8310.7	99	cerebellum Wistar 3888
+GSM15132	Wistar	cerebellum	83.1	54	cerebellum Wistar 3889
+GSM15163	Wistar ky	frontal cortex	109.9	60	frontal cortex Wistar ky 3926
+GSM15164	Wistar ky	frontal cortex	114.2	63	frontal cortex Wistar ky 3927
+GSM15165	Wistar ky	frontal cortex	130.3	65	frontal cortex Wistar ky 3928
+GSM15166	Wistar ky	frontal cortex	69.2	50	frontal cortex Wistar ky 3929
+GSM15167	Wistar ky	frontal cortex	19.8	24	frontal cortex Wistar ky 3930
+GSM15168	Wistar ky	frontal cortex	123.7	63	frontal cortex Wistar ky 3931
+GSM15178	Wistar ky	hippocampus	144.6	65	hippocampus Wistar ky 3956
+GSM15147	Wistar ky	cerebral cortex	766.3	92	cerebral cortex Wistar ky 3910
+GSM15148	Wistar ky	cerebral cortex	283.6	80	cerebral cortex Wistar ky 3911
+GSM15149	Wistar ky	cerebral cortex	1805.6	97	cerebral cortex Wistar ky 3912
+GSM15150	Wistar ky	cerebral cortex	1065.4	94	cerebral cortex Wistar ky 3913
+GSM15181	Wistar ky	ventral striatum	111.3	61	ventral striatum Wistar ky 3959
+GSM15182	Wistar ky	ventral striatum	441	88	ventral striatum Wistar ky 3960
+GSM15186	Wistar ky	dorsal striatum	154.9	72	dorsal striatum Wistar ky 3970
+GSM15189	Wistar ky	dorsal striatum	85.6	55	dorsal striatum Wistar ky 3972
+GSM15222	Wistar ky	amygdala	352	82	amygdala, central nucleus Sprague2
+GSM15133	Wistar ky	cerebellum	353.8	84	cerebellum Wistar ky 3890
+GSM15134	Wistar ky	cerebellum	229.7	77	cerebellum Wistar ky 3891
+GSM15135	Wistar ky	cerebellum	6391.2	99	cerebellum Wistar ky 3892
+GSM15136	Wistar ky	cerebellum	1302.8	95	cerebellum Wistar ky 3893
+GSM15137	Wistar ky	cerebellum	6960.8	99	cerebellum Wistar ky 3894
